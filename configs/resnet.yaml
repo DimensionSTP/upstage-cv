@@ -9,8 +9,8 @@ defaults:
   - trainer: trainer
 
 package_name: upstage-cv
-project_dir: /home/ddang/${package_name}
-connected_dir: /data/${package_name}
+project_dir: /data/ephemeral/${package_name}
+connected_dir: /data/ephemeral/${package_name}
 submission_name: submission
 
 seed: 2024
@@ -38,7 +38,7 @@ min_delta: 0
 
 devices: -1
 accelerator: gpu
-strategy: ddp
+strategy: auto
 log_every_n_steps: 10
 precision: 32
 epoch: 50
