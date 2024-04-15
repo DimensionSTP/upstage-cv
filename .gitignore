@@ -10,5 +10,6 @@
 logs/runs/
 logs/wandb/
 multirun/
+data/
 tmp*
 !requirements.txt
