@@ -1,17 +1,16 @@
-# rPPG packaging project
+# Basic DL pipeline for CV competition
 
-## rPPG custom project
+## For Upstage CV competition
 
 ### Dataset
-VIPL-HR-V1
-Personal
+Upstage CV competition dataset(document image classification)
 
 ### Quick setup
 
 ```bash
 # clone project
-git clone https://github.com/DimensionSTP/rppg-project.git
-cd rppg-project
+git clone https://github.com/DimensionSTP/upstage-cv.git
+cd upstage-cv
 
 # [OPTIONAL] create conda environment
 conda create -n myenv python=3.8
@@ -25,21 +24,14 @@ pip install -r requirements.txt
 
 * end-to-end
 ```shell
-python main.py mode=tune is_tuned=untuned
+python main.py mode=tune is_tuned=untuned num_trials={num_trials}
 ```
 
 ### Training
 
 * end-to-end
 ```shell
-python main.py mode=train is_tuned={tuned or untuned}
-```
-
-### Testing
-
-* end-to-end
-```shell
-python main.py mode=test is_tuned={tuned or untuned} epoch={ckpt epoch}
+python main.py mode=train is_tuned={tuned or untuned} num_trials={num_trials}
 ```
 
 ### Prediction
