@@ -1,0 +1,43 @@
+_target_: src.tuners.resnet_tuner.ResNetTuner
+hparams:
+  model_type:
+    - resnet18
+    - resnet34
+    - resnet50
+    - resnet101
+    - resnet152
+  pretrained:
+    - pretrained
+    - raw
+  lr:
+    low: 0.000005
+    high: 0.00005
+    log: False
+  t_max:
+    low: 25
+    high: 100
+    log: False
+  eta_min:
+    low: 0.0000001
+    high: 0.0000005
+    log: False
+
+module_params:
+  d_model: 1024
+  num_classes: ${num_labels}
+  average: macro
+  interval: step
+  devices: ${devices}
+  accelerator: ${accelerator}
+  strategy: ${strategy}
+  log_every_n_steps: ${log_every_n_steps}
+  precision: ${precision}
+  max_epochs: ${epoch}
+  monitor: ${monitor}
+  mode: ${tracking_direction}
+  patience: ${patience}
+  min_delta: ${min_delta}
+
+num_trials: ${num_trials}
+seed: ${seed}
+hparams_save_path: ${hparams_save_path}

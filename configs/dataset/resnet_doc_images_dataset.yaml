@@ -1,0 +1,6 @@
+_target_: src.datasets.doc_images_dataset.DocImagesDataset
+data_path: ${connected_dir}/data
+split: ${split.train}
+split_ratio: 0.1
+seed: 2024
+image_size: 32

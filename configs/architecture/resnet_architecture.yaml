@@ -1,0 +1,15 @@
+_target_: src.architectures.resnet_architecture.ResNetArchitecture
+
+model:
+  _target_: src.architectures.models.pretrained_resnet.PretrainedResNet
+  model_type: ${model_type}
+  pretrained: ${pretrained}
+  n_classes: ${num_labels}
+
+num_classes: ${num_labels}
+average: macro
+strategy: ${strategy}
+lr: ${lr}
+t_max: ${t_max}
+eta_min: ${eta_min}
+interval: step

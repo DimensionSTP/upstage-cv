@@ -1,0 +1,7 @@
+_target_: lightning.pytorch.Trainer
+devices: ${devices}
+accelerator: ${accelerator}
+strategy: ${strategy}
+log_every_n_steps: ${log_every_n_steps}
+precision: ${precision}
+max_epochs: ${epoch}
