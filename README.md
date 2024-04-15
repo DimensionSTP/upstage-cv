@@ -38,7 +38,7 @@ python main.py mode=train is_tuned={tuned or untuned} num_trials={num_trials}
 
 * end-to-end
 ```shell
-python main.py mode=predict is_tuned={tuned or untuned} epoch={ckpt epoch}
+python main.py mode=predict is_tuned={tuned or untuned} epoch={ckpt epoch} submission_name={submission_name}
 ```
 
 __If you want to change main config, use --config-name={config_name}.__
