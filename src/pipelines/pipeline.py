@@ -170,6 +170,8 @@ def predict(
     all_predictions = torch.cat(flattened_preds, dim=0).numpy()
     pred_df = pd.read_csv(f"{config.connected_dir}/data/predict.csv")
     pred_df["target"] = all_predictions
+    if not os.path.exists(f"{config.connected_dir}/submissions"):
+        os.makedirs(f"{config.connected_dir}/submissions")
     pred_df.to_csv(
         f"{config.connected_dir}/submissions/{config.submission_name}.csv", index=False
     )
