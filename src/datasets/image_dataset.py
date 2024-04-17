@@ -12,7 +12,7 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
 
-class DocImagesDataset(Dataset):
+class UpStageDocsDataset(Dataset):
     def __init__(
         self,
         data_path: str,

@@ -10,7 +10,7 @@ from lightning.pytorch import LightningModule
 from deepspeed.ops.adam import FusedAdam, DeepSpeedCPUAdam
 
 
-class ResNetArchitecture(LightningModule):
+class ImageArchitecture(LightningModule):
     def __init__(
         self,
         model: nn.Module,

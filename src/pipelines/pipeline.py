@@ -12,7 +12,7 @@ from lightning.pytorch.utilities.deepspeed import (
 )
 
 from ..utils.setup import SetUp
-from ..tuners.resnet_tuner import ResNetTuner
+from ..tuners.image_tuner import ImageTuner
 
 
 def train(
@@ -189,7 +189,7 @@ def tune(
     val_loader = setup.get_val_loader()
     logger = setup.get_wandb_logger()
 
-    tuner: ResNetTuner = instantiate(
+    tuner: ImageTuner = instantiate(
         config.tuner,
         train_loader=train_loader,
         val_loader=val_loader,

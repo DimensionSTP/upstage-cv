@@ -15,11 +15,11 @@ import optuna
 from optuna.samplers import TPESampler
 from optuna.pruners import HyperbandPruner
 
-from ..architectures.models.pretrained_resnet import PretrainedResNet
-from ..architectures.resnet_architecture import ResNetArchitecture
+from ..architectures.models.image_model import ImageModel
+from ..architectures.image_architecture import ImageArchitecture
 
 
-class ResNetTuner:
+class ImageTuner:
     def __init__(
         self,
         hparams: Dict[str, Any],
@@ -99,12 +99,12 @@ class ResNetTuner:
                 log=self.hparams.eta_min.log,
             )
 
-        model = PretrainedResNet(
+        model = ImageModel(
             model_type=params["model_type"],
             pretrained=params["pretrained"],
             n_classes=self.module_params.num_classes,
         )
-        architecture = ResNetArchitecture(
+        architecture = ImageArchitecture(
             model=model,
             num_classes=self.module_params.num_classes,
             average=self.module_params.average,

@@ -4,7 +4,7 @@ from torch import nn
 import timm
 
 
-class PretrainedResNet(nn.Module):
+class ImageModel(nn.Module):
     def __init__(self, model_type: str, pretrained: str, n_classes: int) -> None:
         super().__init__()
         if pretrained == "pretrained":
