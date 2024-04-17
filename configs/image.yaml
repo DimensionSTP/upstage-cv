@@ -1,8 +1,8 @@
 # @package _global_
 defaults:
-  - dataset: resnet_doc_images_dataset
-  - architecture: resnet_architecture
-  - tuner: resnet_tuner
+  - dataset: image_dataset
+  - architecture: image_architecture
+  - tuner: image_tuner
   - logger: wandb
   - hydra: hydra
   - callbacks: callbacks
@@ -22,7 +22,7 @@ split:
   val: val
   predict: predict
 
-batch_size: 64
+batch_size: 16
 
 model_type: resnet50
 pretrained: pretrained
@@ -41,10 +41,10 @@ accelerator: gpu
 strategy: auto
 log_every_n_steps: 10
 precision: 32
-epoch: 50
+epoch: 100
 
-model_name: ResNet
-dataset_name: DocImages
+model_name: Image
+dataset_name: UpStageDocs
 mode: train
 
 is_tuned: tuned
@@ -53,7 +53,7 @@ hparams_save_path: ${connected_dir}/hparams/${model_name}/${dataset_name}/${num_
 tuned_hparams_path: ${hparams_save_path}/best_params.json
 
 project_name: ${model_name}-${dataset_name}-${mode}
-save_detail: model_type${model_type}-pretrained${pretrained}
+save_detail: model_type_${model_type}-pretrained_${pretrained}
 resumed_step: 0
 ckpt_path: ${callbacks.model_checkpoint.dirpath}/epoch${epoch}.ckpt
 

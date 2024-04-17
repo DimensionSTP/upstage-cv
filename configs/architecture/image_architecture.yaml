@@ -1,7 +1,7 @@
-_target_: src.architectures.resnet_architecture.ResNetArchitecture
+_target_: src.architectures.image_architecture.ImageArchitecture
 
 model:
-  _target_: src.architectures.models.pretrained_resnet.PretrainedResNet
+  _target_: src.architectures.models.image_model.ImageModel
   model_type: ${model_type}
   pretrained: ${pretrained}
   n_classes: ${num_labels}

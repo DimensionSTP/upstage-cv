@@ -1,11 +1,13 @@
-_target_: src.tuners.resnet_tuner.ResNetTuner
+_target_: src.tuners.image_tuner.ImageTuner
 hparams:
   model_type:
-    - resnet18
-    - resnet34
-    - resnet50
-    - resnet101
-    - resnet152
+    - efficientnet_b0.ra_in1k
+    - efficientnet_b1.ft_in1k
+    - efficientnet_b2.ra_in1k
+    - efficientnet_b3.ra2_in1k
+    - efficientnet_b4.ra2_in1k
+    - efficientnet_b5.sw_in12k
+    - efficientnet_b5.sw_in12k_ft_in1k
   pretrained:
     - pretrained
     - raw
@@ -23,7 +25,6 @@ hparams:
     log: False
 
 module_params:
-  d_model: 1024
   num_classes: ${num_labels}
   average: macro
   interval: step
