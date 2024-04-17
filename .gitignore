@@ -13,3 +13,4 @@ multirun/
 data/
 tmp*
 !requirements.txt
+*.out
