@@ -1,6 +1,15 @@
 _target_: src.datasets.image_dataset.UpStageDocsDataset
 data_path: ${connected_dir}/data
 split: ${split.train}
-split_ratio: 0.1
-seed: 2024
-image_size: 256
+split_ratio: ${split_ratio}
+seed: ${seed}
+image_size: ${image_size}
+augmentation_probability: 0.2
+augmentations:
+  - rotate30
+  - rotate45
+  - rotate90
+  - hflip
+  - vflip
+  - noise
+  - blur

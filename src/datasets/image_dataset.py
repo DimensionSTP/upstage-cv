@@ -20,12 +20,16 @@ class UpStageDocsDataset(Dataset):
         split_ratio: float,
         seed: int,
         image_size: int,
+        augmentation_probability: float,
+        augmentations: List[str],
     ):
         self.data_path = data_path
         self.split = split
         self.split_ratio = split_ratio
         self.seed = seed
         self.image_size = image_size
+        self.augmentation_probability = augmentation_probability
+        self.augmentations = augmentations
         self.image_paths, self.labels = self.get_dataset()
         self.transform = self.get_transform()
 
@@ -47,7 +51,11 @@ class UpStageDocsDataset(Dataset):
             csv_path = f"{self.data_path}/train.csv"
             data = pd.read_csv(csv_path)
             train_data, val_data = train_test_split(
-                data, test_size=self.split_ratio, random_state=self.seed, shuffle=True
+                data,
+                test_size=self.split_ratio,
+                random_state=self.seed,
+                shuffle=True,
+                stratify=data["target"],
             )
             if self.split == "train":
                 data = train_data
@@ -71,20 +79,39 @@ class UpStageDocsDataset(Dataset):
         return (image_paths, labels)
 
     def get_transform(self):
-        if self.split == "train":
-            return A.Compose(
-                [
-                    A.Resize(256, 256),
-                    A.HorizontalFlip(p=0.5),
-                    A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-                    ToTensorV2(),
-                ]
+        transforms = [A.Resize(self.image_size, self.image_size)]
+        if self.split in ["train", "val"]:
+            for aug in self.augmentations:
+                if aug == "rotate30":
+                    transforms.append(
+                        A.Rotate(limit=[30, 30], p=self.augmentation_probability)
+                    )
+                elif aug == "rotate45":
+                    transforms.append(
+                        A.Rotate(limit=[45, 45], p=self.augmentation_probability)
+                    )
+                elif aug == "rotate90":
+                    transforms.append(
+                        A.Rotate(limit=[90, 90], p=self.augmentation_probability)
+                    )
+                elif aug == "hflip":
+                    transforms.append(A.HorizontalFlip(p=self.augmentation_probability))
+                elif aug == "vflip":
+                    transforms.append(A.VerticalFlip(p=self.augmentation_probability))
+                elif aug == "noise":
+                    transforms.append(A.GaussNoise(p=self.augmentation_probability))
+                elif aug == "blur":
+                    transforms.append(
+                        A.Blur(blur_limit=7, p=self.augmentation_probability)
+                    )
+            transforms.append(
+                A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
             )
+            transforms.append(ToTensorV2())
+            return A.Compose(transforms)
         else:
-            return A.Compose(
-                [
-                    A.Resize(256, 256),
-                    A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-                    ToTensorV2(),
-                ]
+            transforms.append(
+                A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
             )
+            transforms.append(ToTensorV2())
+            return A.Compose(transforms)
