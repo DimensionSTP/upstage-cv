@@ -43,6 +43,9 @@ def train(
     for key, value in config.trainer.items():
         if key != "_target_":
             logged_hparams[key] = value
+    for key, value in config.dataset.items():
+        if key not in ["_target_", "data_path", "split", "seed"]:
+            logged_hparams[key] = value
     logger.log_hyperparams(logged_hparams)
 
     trainer: Trainer = instantiate(
@@ -125,6 +128,9 @@ def predict(
     logged_hparams["seed"] = config.seed
     for key, value in config.trainer.items():
         if key != "_target_":
+            logged_hparams[key] = value
+    for key, value in config.dataset.items():
+        if key not in ["_target_", "data_path", "split", "seed"]:
             logged_hparams[key] = value
     logger.log_hyperparams(logged_hparams)
 
