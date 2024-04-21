@@ -1,0 +1,15 @@
+_target_: src.architectures.text_architecture.TextArchitecture
+
+model:
+  _target_: src.architectures.models.text_model.TextModel
+  pretrained_dataset: ${pretrained_dataset}
+  model_type: ${model_type}
+  n_classes: ${num_labels}
+
+num_classes: ${num_labels}
+average: macro
+strategy: ${strategy}
+lr: ${lr}
+t_max: ${t_max}
+eta_min: ${eta_min}
+interval: step
