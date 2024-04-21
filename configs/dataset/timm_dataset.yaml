@@ -1,4 +1,4 @@
-_target_: src.datasets.image_dataset.UpStageDocsDataset
+_target_: src.datasets.timm_dataset.UpStageDocsDataset
 data_path: ${connected_dir}/data
 split: ${split.train}
 split_ratio: ${split_ratio}

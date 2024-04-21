@@ -1,8 +1,0 @@
-_target_: src.datasets.text_dataset.UpStageDocsDataset
-data_path: ${connected_dir}/data
-split: ${split.train}
-split_ratio: ${split_ratio}
-seed: ${seed}
-pretrained_dataset: ${pretrained_dataset}
-model_type: ${model_type}
-text_max_length: ${text_max_length}

@@ -1,8 +1,8 @@
 # @package _global_
 defaults:
-  - dataset: image_dataset
-  - architecture: image_architecture
-  - tuner: image_tuner
+  - dataset: timm_dataset
+  - architecture: timm_architecture
+  - tuner: timm_tuner
   - logger: wandb
   - hydra: hydra
   - callbacks: callbacks
@@ -46,7 +46,7 @@ log_every_n_steps: 10
 precision: 32
 epoch: 100
 
-model_name: Image
+model_name: Timm
 dataset_name: UpStageDocs
 mode: train
 

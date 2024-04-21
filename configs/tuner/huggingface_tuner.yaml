@@ -1,12 +1,20 @@
-_target_: src.tuners.text_tuner.TextTuner
+_target_: src.tuners.huggingface_tuner.HuggingFaceTuner
 hparams:
-  pretrained_dataset:
-    - klue
-  model_type:
-    - roberta-large
-    - roberta-base
-    - roberta-small
-    - bert-base
+  modality:
+    - image
+    - text
+    - multi-modality
+  pretrained_model_name:
+    - klue/roberta-large
+    - klue/roberta-base
+    - klue/roberta-small
+    - klue/bert-base
+    - microsoft/beit-base-patch16-224-pt22k-ft22k
+    - microsoft/beit-large-patch16-224-pt22k-ft22k
+    - microsoft/dit-base-finetuned-rvlcdip
+    - microsoft/dit-large-finetuned-rvlcdip
+    - nielsr/layoutlmv3-finetuned-cord
+    - felixtran/layoutlmv3-rvl-cdip-small 
   lr:
     low: 0.000005
     high: 0.00005
