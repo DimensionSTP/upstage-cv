@@ -1,3 +1,4 @@
+from typing import Union
 import os
 
 import pandas as pd
@@ -12,7 +13,8 @@ from lightning.pytorch.utilities.deepspeed import (
 )
 
 from ..utils.setup import SetUp
-from ..tuners.image_tuner import ImageTuner
+from ..tuners.timm_tuner import TimmTuner
+from ..tuners.huggingface_tuner import HuggingFaceTuner
 
 
 def train(
@@ -195,7 +197,7 @@ def tune(
     val_loader = setup.get_val_loader()
     logger = setup.get_wandb_logger()
 
-    tuner: ImageTuner = instantiate(
+    tuner: Union[HuggingFaceTuner, TimmTuner] = instantiate(
         config.tuner,
         train_loader=train_loader,
         val_loader=val_loader,
