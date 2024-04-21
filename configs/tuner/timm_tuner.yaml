@@ -1,4 +1,4 @@
-_target_: src.tuners.image_tuner.ImageTuner
+_target_: src.tuners.timm_tuner.TimmTuner
 hparams:
   model_type:
     - efficientnet_b0.ra_in1k
