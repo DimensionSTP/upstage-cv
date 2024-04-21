@@ -9,8 +9,8 @@ defaults:
   - trainer: trainer
 
 package_name: upstage-cv
-project_dir: /data/ephemeral/${package_name}
-connected_dir: /data/ephemeral/${package_name}
+project_dir: /home/ddang/${package_name}
+connected_dir: /data/${package_name}
 submission_name: ${model_type}-image_size${image_size}-epoch${epoch}
 
 seed: 2024
@@ -22,7 +22,7 @@ split:
   val: val
   predict: predict
 
-batch_size: 16
+batch_size: 64
 
 split_ratio: 0.1
 image_size: 256
@@ -41,7 +41,7 @@ min_delta: 0
 
 devices: -1
 accelerator: gpu
-strategy: auto
+strategy: ddp
 log_every_n_steps: 10
 precision: 32
 epoch: 100
