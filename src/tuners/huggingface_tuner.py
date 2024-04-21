@@ -15,11 +15,11 @@ import optuna
 from optuna.samplers import TPESampler
 from optuna.pruners import HyperbandPruner
 
-from ..architectures.models.image_model import ImageModel
-from ..architectures.image_architecture import ImageArchitecture
+from ..architectures.models.huggingface_model import HuggingFaceModel
+from ..architectures.huggingface_architecture import HuggingFaceArchitecture
 
 
-class ImageTuner:
+class HuggingFaceTuner:
     def __init__(
         self,
         hparams: Dict[str, Any],
@@ -67,15 +67,33 @@ class ImageTuner:
 
         params = dict()
         params["seed"] = self.seed
-        if self.hparams.model_type:
-            params["model_type"] = trial.suggest_categorical(
-                name="model_type",
-                choices=self.hparams.model_type,
+        if self.hparams.modality:
+            params["modality"] = trial.suggest_categorical(
+                name="modality",
+                choices=self.hparams.modality,
             )
-        if self.hparams.pretrained:
-            params["pretrained"] = trial.suggest_categorical(
-                name="pretrained",
-                choices=self.hparams.pretrained,
+        if self.hparams.pretrained_model_name:
+            if self.hparams.modality == "image":
+                pretrained_model_names = [
+                    pretrained_model_name
+                    for pretrained_model_name in self.hparams.pretrained_model_name
+                    if "bert" in pretrained_model_name
+                ]
+            elif self.hparams.modality == "text":
+                pretrained_model_names = [
+                    pretrained_model_name
+                    for pretrained_model_name in self.hparams.pretrained_model_name
+                    if "it" in pretrained_model_name
+                ]
+            elif self.hparams.modality == "multi-modality":
+                pretrained_model_names = [
+                    pretrained_model_name
+                    for pretrained_model_name in self.hparams.pretrained_model_name
+                    if "layout" in pretrained_model_name
+                ]
+            params["pretrained_model_name"] = trial.suggest_categorical(
+                name="pretrained_model_name",
+                choices=pretrained_model_names,
             )
         if self.hparams.lr:
             params["lr"] = trial.suggest_float(
@@ -99,12 +117,12 @@ class ImageTuner:
                 log=self.hparams.eta_min.log,
             )
 
-        model = ImageModel(
-            model_type=params["model_type"],
-            pretrained=params["pretrained"],
+        model = HuggingFaceModel(
+            modality=params["modality"],
+            pretrained_model_name=params["pretrained_model_name"],
             n_classes=self.module_params.num_classes,
         )
-        architecture = ImageArchitecture(
+        architecture = HuggingFaceArchitecture(
             model=model,
             num_classes=self.module_params.num_classes,
             average=self.module_params.average,

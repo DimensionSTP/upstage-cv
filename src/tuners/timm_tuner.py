@@ -15,11 +15,11 @@ import optuna
 from optuna.samplers import TPESampler
 from optuna.pruners import HyperbandPruner
 
-from ..architectures.models.text_model import TextModel
-from ..architectures.text_architecture import TextArchitecture
+from ..architectures.models.timm_model import TimmModel
+from ..architectures.timm_architecture import TimmArchitecture
 
 
-class TextTuner:
+class TimmTuner:
     def __init__(
         self,
         hparams: Dict[str, Any],
@@ -67,15 +67,15 @@ class TextTuner:
 
         params = dict()
         params["seed"] = self.seed
-        if self.hparams.pretrained_dataset:
-            params["pretrained_dataset"] = trial.suggest_categorical(
-                name="pretrained_dataset",
-                choices=self.hparams.pretrained_dataset,
-            )
         if self.hparams.model_type:
             params["model_type"] = trial.suggest_categorical(
                 name="model_type",
                 choices=self.hparams.model_type,
+            )
+        if self.hparams.pretrained:
+            params["pretrained"] = trial.suggest_categorical(
+                name="pretrained",
+                choices=self.hparams.pretrained,
             )
         if self.hparams.lr:
             params["lr"] = trial.suggest_float(
@@ -99,12 +99,12 @@ class TextTuner:
                 log=self.hparams.eta_min.log,
             )
 
-        model = TextModel(
-            pretrained_dataset=params["pretrained_dataset"],
+        model = TimmModel(
             model_type=params["model_type"],
+            pretrained=params["pretrained"],
             n_classes=self.module_params.num_classes,
         )
-        architecture = TextArchitecture(
+        architecture = TimmArchitecture(
             model=model,
             num_classes=self.module_params.num_classes,
             average=self.module_params.average,

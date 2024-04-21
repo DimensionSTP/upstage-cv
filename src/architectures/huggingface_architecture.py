@@ -10,7 +10,7 @@ from lightning.pytorch import LightningModule
 from deepspeed.ops.adam import FusedAdam, DeepSpeedCPUAdam
 
 
-class ImageArchitecture(LightningModule):
+class HuggingFaceArchitecture(LightningModule):
     def __init__(
         self,
         model: nn.Module,
@@ -41,19 +41,21 @@ class ImageArchitecture(LightningModule):
 
     def forward(
         self,
-        image: torch.Tensor,
+        tokenized_text: torch.Tensor,
     ) -> torch.Tensor:
-        output = self.model(image)
+        output = self.model(tokenized_text)
         return output
 
     def step(
         self,
         batch: Tuple[torch.Tensor, torch.Tensor],
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        image, label = batch
-        output = self(image=image)
-        loss = F.cross_entropy(output, label)
-        pred = torch.argmax(output, dim=1)
+        tokenized_text = batch
+        output = self(tokenized_text=tokenized_text)
+        loss = output.loss
+        logits = output.logits
+        pred = torch.argmax(logits, dim=1)
+        label = tokenized_text["labels"]
         return (loss, pred, label)
 
     def configure_optimizers(self) -> Dict[str, Any]:

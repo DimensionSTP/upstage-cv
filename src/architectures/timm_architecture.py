@@ -10,7 +10,7 @@ from lightning.pytorch import LightningModule
 from deepspeed.ops.adam import FusedAdam, DeepSpeedCPUAdam
 
 
-class TextArchitecture(LightningModule):
+class TimmArchitecture(LightningModule):
     def __init__(
         self,
         model: nn.Module,
@@ -41,21 +41,19 @@ class TextArchitecture(LightningModule):
 
     def forward(
         self,
-        tokenized_text: torch.Tensor,
+        image: torch.Tensor,
     ) -> torch.Tensor:
-        output = self.model(tokenized_text)
+        output = self.model(image)
         return output
 
     def step(
         self,
         batch: Tuple[torch.Tensor, torch.Tensor],
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        tokenized_text = batch
-        output = self(tokenized_text=tokenized_text)
-        loss = output.loss
-        logits = output.logits
-        pred = torch.argmax(logits, dim=1)
-        label = tokenized_text["labels"]
+        image, label = batch
+        output = self(image=image)
+        loss = F.cross_entropy(output, label)
+        pred = torch.argmax(output, dim=1)
         return (loss, pred, label)
 
     def configure_optimizers(self) -> Dict[str, Any]:
