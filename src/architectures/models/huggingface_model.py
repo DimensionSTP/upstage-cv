@@ -17,11 +17,17 @@ class HuggingFaceModel(nn.Module):
         super().__init__()
         if modality in ["text", "multi-modality"]:
             self.model = AutoModelForSequenceClassification.from_pretrained(
-                pretrained_model_name, num_labels=n_classes, output_hidden_states=False
+                pretrained_model_name,
+                num_labels=n_classes,
+                output_hidden_states=False,
+                ignore_mismatched_sizes=True,
             )
         elif modality == "image":
             self.model = AutoModelForImageClassification.from_pretrained(
-                pretrained_model_name, num_labels=n_classes, output_hidden_states=False
+                pretrained_model_name,
+                num_labels=n_classes,
+                output_hidden_states=False,
+                ignore_mismatched_sizes=True,
             )
         else:
             raise ValueError(f"Invalid modality: {modality}")
