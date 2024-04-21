@@ -6,7 +6,7 @@ from omegaconf import OmegaConf, DictConfig
 from src.pipelines.pipeline import train, predict, tune
 
 
-@hydra.main(config_path="configs/", config_name="image.yaml")
+@hydra.main(config_path="configs/", config_name="huggingface.yaml")
 def main(
     config: DictConfig,
 ) -> None:
