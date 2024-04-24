@@ -1,6 +1,6 @@
 # @package _global_
 defaults:
-  - dataset: timm_dataset
+  - dataset: timm_upstagedocs_dataset
   - architecture: timm_architecture
   - tuner: timm_tuner
   - logger: wandb

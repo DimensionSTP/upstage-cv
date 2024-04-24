@@ -12,21 +12,22 @@ class HuggingFaceModel(nn.Module):
         self,
         modality: str,
         pretrained_model_name: str,
-        n_classes: int,
+        num_labels: int,
+        is_backbone: bool,
     ) -> None:
         super().__init__()
         if modality in ["text", "multi-modality"]:
             self.model = AutoModelForSequenceClassification.from_pretrained(
                 pretrained_model_name,
-                num_labels=n_classes,
-                output_hidden_states=False,
+                num_labels=num_labels,
+                output_hidden_states=is_backbone,
                 ignore_mismatched_sizes=True,
             )
         elif modality == "image":
             self.model = AutoModelForImageClassification.from_pretrained(
                 pretrained_model_name,
-                num_labels=n_classes,
-                output_hidden_states=False,
+                num_labels=num_labels,
+                output_hidden_states=is_backbone,
                 ignore_mismatched_sizes=True,
             )
         else:
@@ -34,7 +35,7 @@ class HuggingFaceModel(nn.Module):
 
     def forward(
         self,
-        tokenized_text: torch.Tensor,
+        encoded: torch.Tensor,
     ) -> torch.Tensor:
-        output = self.model(**tokenized_text)
+        output = self.model(**encoded)
         return output

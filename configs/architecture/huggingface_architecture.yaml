@@ -4,9 +4,10 @@ model:
   _target_: src.architectures.models.huggingface_model.HuggingFaceModel
   modality: ${modality}
   pretrained_model_name: ${pretrained_model_name}
-  n_classes: ${num_labels}
+  num_labels: ${num_labels}
+  is_backbone: ${is_backbone}
 
-num_classes: ${num_labels}
+num_labels: ${num_labels}
 average: macro
 strategy: ${strategy}
 lr: ${lr}

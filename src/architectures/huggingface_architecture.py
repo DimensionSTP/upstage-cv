@@ -14,7 +14,7 @@ class HuggingFaceArchitecture(LightningModule):
     def __init__(
         self,
         model: nn.Module,
-        num_classes: int,
+        num_labels: int,
         average: str,
         strategy: str,
         lr: float,
@@ -32,8 +32,16 @@ class HuggingFaceArchitecture(LightningModule):
 
         metrics = MetricCollection(
             [
-                F1Score(task="multiclass", num_classes=num_classes, average=average),
-                Accuracy(task="multiclass", num_classes=num_classes, average=average),
+                F1Score(
+                    task="multiclass",
+                    num_classes=num_labels,
+                    average=average,
+                ),
+                Accuracy(
+                    task="multiclass",
+                    num_classes=num_labels,
+                    average=average,
+                ),
             ]
         )
         self.train_metrics = metrics.clone(prefix="train_")
@@ -41,21 +49,21 @@ class HuggingFaceArchitecture(LightningModule):
 
     def forward(
         self,
-        tokenized_text: torch.Tensor,
+        encoded: torch.Tensor,
     ) -> torch.Tensor:
-        output = self.model(tokenized_text)
+        output = self.model(encoded)
         return output
 
     def step(
         self,
         batch: Tuple[torch.Tensor, torch.Tensor],
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        tokenized_text = batch
-        output = self(tokenized_text=tokenized_text)
+        encoded = batch
+        output = self(encoded=encoded)
         loss = output.loss
         logits = output.logits
         pred = torch.argmax(logits, dim=1)
-        label = tokenized_text["labels"]
+        label = encoded["labels"]
         return (loss, pred, label)
 
     def configure_optimizers(self) -> Dict[str, Any]:

@@ -1,6 +1,6 @@
 # @package _global_
 defaults:
-  - dataset: huggingface_dataset
+  - dataset: huggingface_upstagedocs_dataset
   - architecture: huggingface_architecture
   - tuner: huggingface_tuner
   - logger: wandb
@@ -31,6 +31,7 @@ pretrained_model_name: ${upload_user}/${model_type}
 text_max_length: 512
 
 modality: text
+is_backbone: False
 
 lr: 0.00002
 t_max: 50
