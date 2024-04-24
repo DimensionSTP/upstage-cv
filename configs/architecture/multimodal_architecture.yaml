@@ -1,0 +1,43 @@
+_target_: src.architectures.multimodal_architecture.MultiModalArchitecture
+
+image_backbone:
+  _target_: src.architectures.models.huggingface_model.HuggingFaceModel
+  modality: image
+  pretrained_model_name: ${image_pretrained_model_name}
+  num_labels: ${num_labels}
+  is_backbone: ${is_backbone}
+
+text_backbone:
+  _target_: src.architectures.models.huggingface_model.HuggingFaceModel
+  modality: text
+  pretrained_model_name: ${text_pretrained_model_name}
+  num_labels: ${num_labels}
+  is_backbone: ${is_backbone}
+
+model:
+  _target_: src.architectures.models.multimodal_transformer.MultiModalTransformer
+  model_dims: ${model_dims}
+  num_heads: ${num_heads}
+  num_layers: ${num_layers}
+  image_dims: 1024
+  text_dims: 1024
+  text_max_length: ${text_max_length}
+  num_labels: ${num_labels}
+  attn_dropout: ${attn_dropout}
+  relu_dropout: ${relu_dropout}
+  res_dropout: ${res_dropout}
+  emb_dropout: ${emb_dropout}
+  out_dropout: ${out_dropout}
+  attn_mask: ${attn_mask}
+  scale_embedding: ${scale_embedding}
+
+num_labels: ${num_labels}
+average: macro
+strategy: ${strategy}
+multimodal_weight: ${multimodal_weight}
+modality_split_weight: ${modality_split_weight}
+dynamic_loss_weight: ${dynamic_loss_weight}
+lr: ${lr}
+t_max: ${t_max}
+eta_min: ${eta_min}
+interval: step

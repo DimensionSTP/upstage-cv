@@ -1,0 +1,67 @@
+_target_: src.tuners.multimodal_tuner.MultiModalTuner
+hparams:
+  num_heads:
+    - 4
+    - 8
+  num_layers:
+    - 2
+    - 3
+    - 4
+  attn_dropout:
+    low: 0.1
+    high: 0.5
+    log: False
+  relu_dropout:
+    low: 0.1
+    high: 0.5
+    log: False
+  res_dropout:
+    low: 0.1
+    high: 0.5
+    log: False
+  emb_dropout:
+    low: 0.1
+    high: 0.5
+    log: False
+  out_dropout:
+    low: 0.1
+    high: 0.5
+    log: False
+  attn_mask:
+    - False
+  scale_embedding:
+    - True
+    - False
+  lr:
+    low: 0.000005
+    high: 0.00005
+    log: False
+  t_max:
+    low: 25
+    high: 100
+    log: False
+  eta_min:
+    low: 0.0000001
+    high: 0.0000005
+    log: False
+
+module_params:
+  model_dims: 1024
+  text_max_length: ${text_max_length}
+  num_labels: ${num_labels}
+  average: macro
+  interval: step
+  devices: ${devices}
+  accelerator: ${accelerator}
+  strategy: ${strategy}
+  log_every_n_steps: ${log_every_n_steps}
+  precision: ${precision}
+  max_epochs: ${epoch}
+  monitor: ${monitor}
+  mode: ${tracking_direction}
+  patience: ${patience}
+  min_delta: ${min_delta}
+
+num_trials: ${num_trials}
+seed: ${seed}
+hparams_save_path: ${hparams_save_path}

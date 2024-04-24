@@ -1,0 +1,83 @@
+# @package _global_
+defaults:
+  - dataset: multimodal_upstagedocs_dataset
+  - architecture: multimodal_architecture
+  - tuner: multimodal_tuner
+  - logger: wandb
+  - hydra: hydra
+  - callbacks: callbacks
+  - trainer: trainer
+
+package_name: upstage-cv
+project_dir: /home/ddang/${package_name}
+connected_dir: /data/${package_name}
+submission_name: image-${image_upload_user}_${image_model_type}-text-${text_upload_user}_${text_model_type}-epoch${epoch}
+
+seed: 2024
+
+num_labels: 17
+
+split:
+  train: train
+  val: val
+  predict: predict
+
+batch_size: 16
+
+split_ratio: 0.1
+image_upload_user: microsoft
+image_model_type: dit-large-finetuned-rvlcdip
+image_pretrained_model_name: ${image_upload_user}/${image_model_type}
+text_upload_user: klue
+text_model_type: roberta-large
+text_pretrained_model_name: ${text_upload_user}/${text_model_type}
+text_max_length: 197
+
+is_backbone: True
+
+model_dims: 1024
+num_heads: 8
+num_layers: 4
+attn_dropout: .3
+relu_dropout: .3
+res_dropout: .3
+emb_dropout: .3
+out_dropout: .3
+attn_mask: False
+scale_embedding: True
+
+multimodal_weight: 0.5
+modality_split_weight: 0.5
+dynamic_loss_weight: 0.5
+lr: 0.00001
+t_max: 50
+eta_min: 0.0000025
+
+monitor: val_MulticlassF1Score
+tracking_direction: max
+patience: 3
+min_delta: 0
+
+devices: -1
+accelerator: gpu
+strategy: ddp
+log_every_n_steps: 10
+precision: 32
+epoch: 20
+
+model_name: MultiModalTransformer
+dataset_name: UpStageDocs
+mode: train
+
+is_tuned: tuned
+num_trials: 3
+hparams_save_path: ${connected_dir}/hparams/${model_name}/${dataset_name}/${num_trials}_trials
+tuned_hparams_path: ${hparams_save_path}/best_params.json
+
+project_name: ${model_name}-${dataset_name}-${mode}
+save_detail: model_dims${model_dims}-num_heads${num_heads}-num_layers${num_layers}-bs${batch_size}
+resumed_step: 0
+ckpt_path: ${callbacks.model_checkpoint.dirpath}/epoch${epoch}.ckpt
+
+run_name: ${project_name}
+work_dir: ${hydra:runtime.cwd}
