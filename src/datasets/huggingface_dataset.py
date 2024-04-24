@@ -35,15 +35,18 @@ class UpStageDocsDataset(Dataset):
         self.modality = modality
         if self.modality == "image":
             self.data_encoder = AutoImageProcessor.from_pretrained(
-                pretrained_model_name
+                pretrained_model_name,
             )
         elif self.modality == "text":
             self.data_encoder = AutoTokenizer.from_pretrained(
-                pretrained_model_name, use_fast=True
+                pretrained_model_name,
+                use_fast=True,
             )
         elif self.modality == "multi-modality":
             self.data_encoder = AutoProcessor.from_pretrained(
-                pretrained_model_name, apply_ocr=True, ocr_lang="kor"
+                pretrained_model_name,
+                apply_ocr=True,
+                ocr_lang="kor",
             )
         else:
             raise ValueError(f"Invalid modality: {self.modality}")
@@ -63,7 +66,10 @@ class UpStageDocsDataset(Dataset):
         if self.modality in ["image", "multi-modality"]:
             data = np.array(Image.open(self.datas[idx]).convert("RGB"))
             data = self.transform(image=data)["image"]
-            encoded = self.encode_image(data)
+            if self.modality == "image":
+                encoded = self.encode_image(data)
+            else:
+                encoded = self.encode_text(data)
         else:
             data = self.normalize_string(self.datas[idx])
             encoded = self.encode_text(data)
@@ -74,7 +80,7 @@ class UpStageDocsDataset(Dataset):
 
     def get_dataset(self) -> Tuple[List[str], List[str]]:
         if self.split in ["train", "val"]:
-            csv_path = f"{self.data_path}/train_text_ver0.csv"
+            csv_path = f"{self.data_path}/train.csv"
             data = pd.read_csv(csv_path)
             data = data.fillna("_")
             train_data, val_data = train_test_split(
@@ -89,7 +95,7 @@ class UpStageDocsDataset(Dataset):
             else:
                 data = val_data
         elif self.split == "predict":
-            csv_path = f"{self.data_path}/predict_text_ver1.csv"
+            csv_path = f"{self.data_path}/text.csv"
             data = pd.read_csv(csv_path)
             data = data.fillna("_")
         else:
@@ -146,7 +152,10 @@ class UpStageDocsDataset(Dataset):
         self,
         data: np.ndarray,
     ) -> torch.Tensor:
-        encoded = self.data_encoder(data, return_tensors="pt")
+        encoded = self.data_encoder(
+            data,
+            return_tensors="pt",
+        )
         encoded = {k: v.squeeze(0) for k, v in encoded.items()}
         return encoded
 
@@ -162,12 +171,17 @@ class UpStageDocsDataset(Dataset):
         self,
         data: str,
     ) -> torch.Tensor:
+        if self.modality == "text":
+            add_special_tokens = True
+        else:
+            add_special_tokens = False
         encoded = self.data_encoder(
             data,
             padding="max_length",
             max_length=self.text_max_length,
             truncation=True,
             return_tensors="pt",
+            add_special_tokens=add_special_tokens,
         )
         encoded = {k: v.squeeze(0) for k, v in encoded.items()}
         return encoded
