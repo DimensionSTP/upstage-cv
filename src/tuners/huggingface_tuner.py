@@ -67,34 +67,36 @@ class HuggingFaceTuner:
 
         params = dict()
         params["seed"] = self.seed
-        if self.hparams.modality:
-            params["modality"] = trial.suggest_categorical(
-                name="modality",
-                choices=self.hparams.modality,
-            )
         if self.hparams.pretrained_model_name:
-            if self.hparams.modality == "image":
-                pretrained_model_names = [
-                    pretrained_model_name
-                    for pretrained_model_name in self.hparams.pretrained_model_name
-                    if "bert" in pretrained_model_name
-                ]
-            elif self.hparams.modality == "text":
-                pretrained_model_names = [
-                    pretrained_model_name
-                    for pretrained_model_name in self.hparams.pretrained_model_name
-                    if "it" in pretrained_model_name
-                ]
-            elif self.hparams.modality == "multi-modality":
-                pretrained_model_names = [
-                    pretrained_model_name
-                    for pretrained_model_name in self.hparams.pretrained_model_name
-                    if "layout" in pretrained_model_name
-                ]
-            params["pretrained_model_name"] = trial.suggest_categorical(
-                name="pretrained_model_name",
-                choices=pretrained_model_names,
-            )
+            if self.module_params.modality == "image":
+                params["pretrained_model_name"] = trial.suggest_categorical(
+                    name="pretrained_model_name",
+                    choices=[
+                        name
+                        for name in self.hparams.pretrained_model_name
+                        if "it" in name
+                    ],
+                )
+            elif self.module_params.modality == "text":
+                params["pretrained_model_name"] = trial.suggest_categorical(
+                    name="pretrained_model_name",
+                    choices=[
+                        name
+                        for name in self.hparams.pretrained_model_name
+                        if "bert" in name
+                    ],
+                )
+            elif self.module_params.modality == "multi-modality":
+                params["pretrained_model_name"] = trial.suggest_categorical(
+                    name="pretrained_model_name",
+                    choices=[
+                        name
+                        for name in self.hparams.pretrained_model_name
+                        if "layout" in name
+                    ],
+                )
+            else:
+                raise ValueError(f"Invalid modality: {self.hparams.modality}")
         if self.hparams.lr:
             params["lr"] = trial.suggest_float(
                 name="lr",
@@ -118,13 +120,14 @@ class HuggingFaceTuner:
             )
 
         model = HuggingFaceModel(
-            modality=params["modality"],
+            modality=self.module_params.modality,
             pretrained_model_name=params["pretrained_model_name"],
-            n_classes=self.module_params.num_classes,
+            num_labels=self.module_params.num_labels,
+            is_backbone=self.module_params.is_backbone,
         )
         architecture = HuggingFaceArchitecture(
             model=model,
-            num_classes=self.module_params.num_classes,
+            num_labels=self.module_params.num_labels,
             average=self.module_params.average,
             strategy=self.module_params.strategy,
             lr=params["lr"],

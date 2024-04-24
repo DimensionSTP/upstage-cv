@@ -1,9 +1,5 @@
 _target_: src.tuners.huggingface_tuner.HuggingFaceTuner
 hparams:
-  modality:
-    - image
-    - text
-    - multi-modality
   pretrained_model_name:
     - klue/roberta-large
     - klue/roberta-base
@@ -14,6 +10,7 @@ hparams:
     - microsoft/dit-base-finetuned-rvlcdip
     - microsoft/dit-large-finetuned-rvlcdip
     - nielsr/layoutlmv3-finetuned-cord
+    - nielsr/layoutlmv3-finetuned-funsd
     - felixtran/layoutlmv3-rvl-cdip-small 
   lr:
     low: 0.000005
@@ -29,7 +26,9 @@ hparams:
     log: False
 
 module_params:
-  num_classes: ${num_labels}
+  modality: ${modality}
+  num_labels: ${num_labels}
+  is_backbone: ${is_backbone}
   average: macro
   interval: step
   devices: ${devices}
