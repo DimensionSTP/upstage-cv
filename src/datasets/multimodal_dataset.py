@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 import torch
 from torch.utils.data import Dataset
 
-from transformers import AutoImageProcessor, AutoTokenizer, AutoProcessor
+from transformers import AutoImageProcessor, AutoTokenizer
 
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
@@ -56,13 +56,15 @@ class UpStageDocsDataset(Dataset):
         image = self.transform(image=image)["image"]
         encoded_image = self.encode_image(image)
         encoded_image["labels"] = torch.tensor(
-            [self.labels[idx]], dtype=torch.long
+            [self.labels[idx]],
+            dtype=torch.long,
         ).squeeze(0)
 
         text = self.normalize_string(self.texts[idx])
         encoded_text = self.encode_text(text)
         encoded_text["labels"] = torch.tensor(
-            [self.labels[idx]], dtype=torch.long
+            [self.labels[idx]],
+            dtype=torch.long,
         ).squeeze(0)
 
         image_mask = self.get_padding_mask(
@@ -117,25 +119,49 @@ class UpStageDocsDataset(Dataset):
             for aug in self.augmentations:
                 if aug == "rotate30":
                     transforms.append(
-                        A.Rotate(limit=[30, 30], p=self.augmentation_probability)
+                        A.Rotate(
+                            limit=[30, 30],
+                            p=self.augmentation_probability,
+                        )
                     )
                 elif aug == "rotate45":
                     transforms.append(
-                        A.Rotate(limit=[45, 45], p=self.augmentation_probability)
+                        A.Rotate(
+                            limit=[45, 45],
+                            p=self.augmentation_probability,
+                        )
                     )
                 elif aug == "rotate90":
                     transforms.append(
-                        A.Rotate(limit=[90, 90], p=self.augmentation_probability)
+                        A.Rotate(
+                            limit=[90, 90],
+                            p=self.augmentation_probability,
+                        )
                     )
                 elif aug == "hflip":
-                    transforms.append(A.HorizontalFlip(p=self.augmentation_probability))
+                    transforms.append(
+                        A.HorizontalFlip(
+                            p=self.augmentation_probability,
+                        )
+                    )
                 elif aug == "vflip":
-                    transforms.append(A.VerticalFlip(p=self.augmentation_probability))
+                    transforms.append(
+                        A.VerticalFlip(
+                            p=self.augmentation_probability,
+                        )
+                    )
                 elif aug == "noise":
-                    transforms.append(A.GaussNoise(p=self.augmentation_probability))
+                    transforms.append(
+                        A.GaussNoise(
+                            p=self.augmentation_probability,
+                        )
+                    )
                 elif aug == "blur":
                     transforms.append(
-                        A.Blur(blur_limit=7, p=self.augmentation_probability)
+                        A.Blur(
+                            blur_limit=7,
+                            p=self.augmentation_probability,
+                        )
                     )
             transforms.append(ToTensorV2())
             return A.Compose(transforms)

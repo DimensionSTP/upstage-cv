@@ -73,9 +73,10 @@ class UpStageDocsDataset(Dataset):
         else:
             data = self.normalize_string(self.datas[idx])
             encoded = self.encode_text(data)
-        encoded["labels"] = torch.tensor([self.labels[idx]], dtype=torch.long).squeeze(
-            0
-        )
+        encoded["labels"] = torch.tensor(
+            [self.labels[idx]],
+            dtype=torch.long,
+        ).squeeze(0)
         return encoded
 
     def get_dataset(self) -> Tuple[List[str], List[str]]:
@@ -122,25 +123,49 @@ class UpStageDocsDataset(Dataset):
             for aug in self.augmentations:
                 if aug == "rotate30":
                     transforms.append(
-                        A.Rotate(limit=[30, 30], p=self.augmentation_probability)
+                        A.Rotate(
+                            limit=[30, 30],
+                            p=self.augmentation_probability,
+                        )
                     )
                 elif aug == "rotate45":
                     transforms.append(
-                        A.Rotate(limit=[45, 45], p=self.augmentation_probability)
+                        A.Rotate(
+                            limit=[45, 45],
+                            p=self.augmentation_probability,
+                        )
                     )
                 elif aug == "rotate90":
                     transforms.append(
-                        A.Rotate(limit=[90, 90], p=self.augmentation_probability)
+                        A.Rotate(
+                            limit=[90, 90],
+                            p=self.augmentation_probability,
+                        )
                     )
                 elif aug == "hflip":
-                    transforms.append(A.HorizontalFlip(p=self.augmentation_probability))
+                    transforms.append(
+                        A.HorizontalFlip(
+                            p=self.augmentation_probability,
+                        )
+                    )
                 elif aug == "vflip":
-                    transforms.append(A.VerticalFlip(p=self.augmentation_probability))
+                    transforms.append(
+                        A.VerticalFlip(
+                            p=self.augmentation_probability,
+                        )
+                    )
                 elif aug == "noise":
-                    transforms.append(A.GaussNoise(p=self.augmentation_probability))
+                    transforms.append(
+                        A.GaussNoise(
+                            p=self.augmentation_probability,
+                        )
+                    )
                 elif aug == "blur":
                     transforms.append(
-                        A.Blur(blur_limit=7, p=self.augmentation_probability)
+                        A.Blur(
+                            blur_limit=7,
+                            p=self.augmentation_probability,
+                        )
                     )
             transforms.append(ToTensorV2())
             return A.Compose(transforms)

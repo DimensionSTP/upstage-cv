@@ -59,10 +59,19 @@ class MultiModalTransformer(nn.Module):
         self.image_self = self.get_network(**kwargs)
         self.text_self = self.get_network(**kwargs)
 
-        self.fc1 = nn.Linear(combined_dims, combined_dims)
-        self.fc2 = nn.Linear(combined_dims, combined_dims)
+        self.fc1 = nn.Linear(
+            combined_dims,
+            combined_dims,
+        )
+        self.fc2 = nn.Linear(
+            combined_dims,
+            combined_dims,
+        )
         self.dropout = nn.Dropout(out_dropout)
-        self.out_layer = nn.Linear(combined_dims, num_labels)
+        self.out_layer = nn.Linear(
+            combined_dims,
+            num_labels,
+        )
 
     def forward(
         self,
@@ -73,11 +82,33 @@ class MultiModalTransformer(nn.Module):
     ) -> torch.Tensor:
         image = self.image_encoder(image.transpose(1, 2)).transpose(1, 2)
         text = self.text_encoder(text.transpose(1, 2)).transpose(1, 2)
-        image = self.image_text(query=image, key=text, key_padding_mask=text_mask)
-        text = self.text_image(query=text, key=image, key_padding_mask=image_mask)
-        image = self.image_self(query=image, key=image, key_padding_mask=image_mask)
-        text = self.text_self(query=text, key=text, key_padding_mask=text_mask)
-        features = torch.cat([image, text], dim=2)
+        image = self.image_text(
+            query=image,
+            key=text,
+            key_padding_mask=text_mask,
+        )
+        text = self.text_image(
+            query=text,
+            key=image,
+            key_padding_mask=image_mask,
+        )
+        image = self.image_self(
+            query=image,
+            key=image,
+            key_padding_mask=image_mask,
+        )
+        text = self.text_self(
+            query=text,
+            key=text,
+            key_padding_mask=text_mask,
+        )
+        features = torch.cat(
+            [
+                image,
+                text,
+            ],
+            dim=2,
+        )
         pooler_output = features[:, 0, :].squeeze()
         out = pooler_output + self.fc2(self.dropout(F.relu(self.fc1(pooler_output))))
 

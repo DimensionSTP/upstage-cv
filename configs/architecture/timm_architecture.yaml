@@ -4,9 +4,9 @@ model:
   _target_: src.architectures.models.timm_model.TimmModel
   model_type: ${model_type}
   pretrained: ${pretrained}
-  n_classes: ${num_labels}
+  num_labels: ${num_labels}
 
-num_classes: ${num_labels}
+num_labels: ${num_labels}
 average: macro
 strategy: ${strategy}
 lr: ${lr}

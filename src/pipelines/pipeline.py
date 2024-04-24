@@ -15,6 +15,7 @@ from lightning.pytorch.utilities.deepspeed import (
 from ..utils.setup import SetUp
 from ..tuners.timm_tuner import TimmTuner
 from ..tuners.huggingface_tuner import HuggingFaceTuner
+from ..tuners.multimodal_tuner import MultiModalTuner
 
 
 def train(
@@ -181,7 +182,8 @@ def predict(
     if not os.path.exists(f"{config.connected_dir}/submissions"):
         os.makedirs(f"{config.connected_dir}/submissions")
     pred_df.to_csv(
-        f"{config.connected_dir}/submissions/{config.submission_name}.csv", index=False
+        f"{config.connected_dir}/submissions/{config.submission_name}.csv",
+        index=False,
     )
 
 
@@ -197,7 +199,7 @@ def tune(
     val_loader = setup.get_val_loader()
     logger = setup.get_wandb_logger()
 
-    tuner: Union[HuggingFaceTuner, TimmTuner] = instantiate(
+    tuner: Union[TimmTuner, HuggingFaceTuner, MultiModalTuner] = instantiate(
         config.tuner,
         train_loader=train_loader,
         val_loader=val_loader,

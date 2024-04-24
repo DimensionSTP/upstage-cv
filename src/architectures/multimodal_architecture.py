@@ -92,7 +92,10 @@ class MultiModalArchitecture(LightningModule):
 
         image_loss = image_output.loss
         text_loss = text_output.loss
-        multimodal_loss = F.cross_entropy(multimodal_output, label)
+        multimodal_loss = F.cross_entropy(
+            multimodal_output,
+            label,
+        )
 
         total_epochs = self.trainer.max_epochs
         current_epoch = self.current_epoch
@@ -105,21 +108,35 @@ class MultiModalArchitecture(LightningModule):
             self.text_weight * text_loss
         ) - self.dynamic_loss_weight * (current_epoch / total_epochs)
         loss = weighted_multimodal_loss + weighted_image_loss + weighted_text_loss
-        pred = torch.argmax(multimodal_output, dim=1)
+        pred = torch.argmax(
+            multimodal_output,
+            dim=1,
+        )
         return (loss, pred, label)
 
     def configure_optimizers(self) -> Dict[str, Any]:
         if self.strategy == "deepspeed_stage_3":
-            optimizer = FusedAdam(self.parameters(), lr=self.lr)
+            optimizer = FusedAdam(
+                self.parameters(),
+                lr=self.lr,
+            )
         elif (
             self.strategy == "deepspeed_stage_2_offload"
             or self.strategy == "deepspeed_stage_3_offload"
         ):
-            optimizer = DeepSpeedCPUAdam(self.parameters(), lr=self.lr)
+            optimizer = DeepSpeedCPUAdam(
+                self.parameters(),
+                lr=self.lr,
+            )
         else:
-            optimizer = optim.AdamW(self.parameters(), lr=self.lr)
+            optimizer = optim.AdamW(
+                self.parameters(),
+                lr=self.lr,
+            )
         scheduler = optim.lr_scheduler.CosineAnnealingLR(
-            optimizer, T_max=self.t_max, eta_min=self.eta_min
+            optimizer,
+            T_max=self.t_max,
+            eta_min=self.eta_min,
         )
         return {
             "optimizer": optimizer,
@@ -134,7 +151,10 @@ class MultiModalArchitecture(LightningModule):
         batch_idx: int,
     ) -> Dict[str, torch.Tensor]:
         loss, pred, label = self.step(batch)
-        metrics = self.train_metrics(pred, label)
+        metrics = self.train_metrics(
+            pred,
+            label,
+        )
         self.log(
             "train_loss",
             loss,
@@ -144,7 +164,11 @@ class MultiModalArchitecture(LightningModule):
             sync_dist=True,
         )
         self.log_dict(
-            metrics, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True
+            metrics,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            sync_dist=True,
         )
         return {"loss": loss, "pred": pred, "label": label}
 
@@ -156,7 +180,10 @@ class MultiModalArchitecture(LightningModule):
         batch_idx: int,
     ) -> Dict[str, torch.Tensor]:
         loss, pred, label = self.step(batch)
-        metrics = self.val_metrics(pred, label)
+        metrics = self.val_metrics(
+            pred,
+            label,
+        )
         self.log(
             "val_loss",
             loss,
@@ -166,7 +193,11 @@ class MultiModalArchitecture(LightningModule):
             sync_dist=True,
         )
         self.log_dict(
-            metrics, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True
+            metrics,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            sync_dist=True,
         )
         return {"loss": loss, "pred": pred, "label": label}
 

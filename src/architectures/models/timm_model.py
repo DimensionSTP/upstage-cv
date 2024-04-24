@@ -5,7 +5,7 @@ import timm
 
 
 class TimmModel(nn.Module):
-    def __init__(self, model_type: str, pretrained: str, n_classes: int) -> None:
+    def __init__(self, model_type: str, pretrained: str, num_labels: int) -> None:
         super().__init__()
         if pretrained == "pretrained":
             is_pretrained = True
@@ -14,7 +14,9 @@ class TimmModel(nn.Module):
         else:
             raise ValueError(f"Invalid pretrained: {pretrained}")
         self.model = timm.create_model(
-            model_type, pretrained=is_pretrained, num_classes=n_classes
+            model_type,
+            pretrained=is_pretrained,
+            num_classes=num_labels,
         )
 
     def forward(

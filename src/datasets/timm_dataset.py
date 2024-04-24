@@ -84,34 +84,64 @@ class UpStageDocsDataset(Dataset):
             for aug in self.augmentations:
                 if aug == "rotate30":
                     transforms.append(
-                        A.Rotate(limit=[30, 30], p=self.augmentation_probability)
+                        A.Rotate(
+                            limit=[30, 30],
+                            p=self.augmentation_probability,
+                        )
                     )
                 elif aug == "rotate45":
                     transforms.append(
-                        A.Rotate(limit=[45, 45], p=self.augmentation_probability)
+                        A.Rotate(
+                            limit=[45, 45],
+                            p=self.augmentation_probability,
+                        )
                     )
                 elif aug == "rotate90":
                     transforms.append(
-                        A.Rotate(limit=[90, 90], p=self.augmentation_probability)
+                        A.Rotate(
+                            limit=[90, 90],
+                            p=self.augmentation_probability,
+                        )
                     )
                 elif aug == "hflip":
-                    transforms.append(A.HorizontalFlip(p=self.augmentation_probability))
+                    transforms.append(
+                        A.HorizontalFlip(
+                            p=self.augmentation_probability,
+                        )
+                    )
                 elif aug == "vflip":
-                    transforms.append(A.VerticalFlip(p=self.augmentation_probability))
+                    transforms.append(
+                        A.VerticalFlip(
+                            p=self.augmentation_probability,
+                        )
+                    )
                 elif aug == "noise":
-                    transforms.append(A.GaussNoise(p=self.augmentation_probability))
+                    transforms.append(
+                        A.GaussNoise(
+                            p=self.augmentation_probability,
+                        )
+                    )
                 elif aug == "blur":
                     transforms.append(
-                        A.Blur(blur_limit=7, p=self.augmentation_probability)
+                        A.Blur(
+                            blur_limit=7,
+                            p=self.augmentation_probability,
+                        )
                     )
             transforms.append(
-                A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+                A.Normalize(
+                    mean=[0.485, 0.456, 0.406],
+                    std=[0.229, 0.224, 0.225],
+                )
             )
             transforms.append(ToTensorV2())
             return A.Compose(transforms)
         else:
             transforms.append(
-                A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+                A.Normalize(
+                    mean=[0.485, 0.456, 0.406],
+                    std=[0.229, 0.224, 0.225],
+                )
             )
             transforms.append(ToTensorV2())
             return A.Compose(transforms)

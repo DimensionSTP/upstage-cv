@@ -62,22 +62,36 @@ class HuggingFaceArchitecture(LightningModule):
         output = self(encoded=encoded)
         loss = output.loss
         logits = output.logits
-        pred = torch.argmax(logits, dim=1)
+        pred = torch.argmax(
+            logits,
+            dim=1,
+        )
         label = encoded["labels"]
         return (loss, pred, label)
 
     def configure_optimizers(self) -> Dict[str, Any]:
         if self.strategy == "deepspeed_stage_3":
-            optimizer = FusedAdam(self.parameters(), lr=self.lr)
+            optimizer = FusedAdam(
+                self.parameters(),
+                lr=self.lr,
+            )
         elif (
             self.strategy == "deepspeed_stage_2_offload"
             or self.strategy == "deepspeed_stage_3_offload"
         ):
-            optimizer = DeepSpeedCPUAdam(self.parameters(), lr=self.lr)
+            optimizer = DeepSpeedCPUAdam(
+                self.parameters(),
+                lr=self.lr,
+            )
         else:
-            optimizer = optim.AdamW(self.parameters(), lr=self.lr)
+            optimizer = optim.AdamW(
+                self.parameters(),
+                lr=self.lr,
+            )
         scheduler = optim.lr_scheduler.CosineAnnealingLR(
-            optimizer, T_max=self.t_max, eta_min=self.eta_min
+            optimizer,
+            T_max=self.t_max,
+            eta_min=self.eta_min,
         )
         return {
             "optimizer": optimizer,
@@ -90,7 +104,10 @@ class HuggingFaceArchitecture(LightningModule):
         batch_idx: int,
     ) -> Dict[str, torch.Tensor]:
         loss, pred, label = self.step(batch)
-        metrics = self.train_metrics(pred, label)
+        metrics = self.train_metrics(
+            pred,
+            label,
+        )
         self.log(
             "train_loss",
             loss,
@@ -100,7 +117,11 @@ class HuggingFaceArchitecture(LightningModule):
             sync_dist=True,
         )
         self.log_dict(
-            metrics, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True
+            metrics,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            sync_dist=True,
         )
         return {"loss": loss, "pred": pred, "label": label}
 
@@ -110,7 +131,10 @@ class HuggingFaceArchitecture(LightningModule):
         batch_idx: int,
     ) -> Dict[str, torch.Tensor]:
         loss, pred, label = self.step(batch)
-        metrics = self.val_metrics(pred, label)
+        metrics = self.val_metrics(
+            pred,
+            label,
+        )
         self.log(
             "val_loss",
             loss,
@@ -120,7 +144,11 @@ class HuggingFaceArchitecture(LightningModule):
             sync_dist=True,
         )
         self.log_dict(
-            metrics, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True
+            metrics,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            sync_dist=True,
         )
         return {"loss": loss, "pred": pred, "label": label}
 

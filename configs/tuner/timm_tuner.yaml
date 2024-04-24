@@ -25,7 +25,7 @@ hparams:
     log: False
 
 module_params:
-  num_classes: ${num_labels}
+  num_labels: ${num_labels}
   average: macro
   interval: step
   devices: ${devices}
