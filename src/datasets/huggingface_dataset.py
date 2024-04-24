@@ -171,17 +171,13 @@ class UpStageDocsDataset(Dataset):
         self,
         data: str,
     ) -> torch.Tensor:
-        if self.modality == "text":
-            add_special_tokens = True
-        else:
-            add_special_tokens = False
         encoded = self.data_encoder(
             data,
             padding="max_length",
             max_length=self.text_max_length,
             truncation=True,
             return_tensors="pt",
-            add_special_tokens=add_special_tokens,
+            add_special_tokens=True,
         )
         encoded = {k: v.squeeze(0) for k, v in encoded.items()}
         return encoded
