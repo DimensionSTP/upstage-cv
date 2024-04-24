@@ -43,6 +43,8 @@ python main.py mode=predict is_tuned={tuned or untuned} epoch={ckpt epoch} submi
 
 __If you want to change main config, use --config-name={config_name}.__
 
+__If you want to use main config as huggingface, set modality={modality}, upload_user={upload_user}, model_type={model_type}.__
+
 __Also, you can use --multirun option.__
 
 __You can set additional arguments through the command line.__
