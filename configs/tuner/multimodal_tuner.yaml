@@ -32,6 +32,18 @@ hparams:
   scale_embedding:
     - True
     - False
+  multimodal_weight:
+    low: 0.1
+    high: 0.9
+    log: False
+  modality_split_weight:
+    low: 0.1
+    high: 0.9
+    log: False
+  dynamic_loss_weight:
+    low: 0.1
+    high: 0.9
+    log: False
   lr:
     low: 0.000005
     high: 0.00005
@@ -46,6 +58,9 @@ hparams:
     log: False
 
 module_params:
+  image_backbone: ${image_pretrained_model_name}
+  text_backbone: ${text_pretrained_model_name}
+  is_backbone: ${is_backbone}
   model_dims: 1024
   text_max_length: ${text_max_length}
   num_labels: ${num_labels}

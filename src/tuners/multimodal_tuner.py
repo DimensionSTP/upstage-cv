@@ -15,6 +15,7 @@ import optuna
 from optuna.samplers import TPESampler
 from optuna.pruners import HyperbandPruner
 
+from ..architectures.models.huggingface_model import HuggingFaceModel
 from ..architectures.models.multimodal_transformer import MultiModalTransformer
 from ..architectures.multimodal_architecture import MultiModalArchitecture
 
@@ -131,6 +132,27 @@ class MultiModalTuner:
                 name="scale_embedding",
                 choices=self.hparams.scale_embedding,
             )
+        if self.hparams.multimodal_weight:
+            params["multimodal_weight"] = trial.suggest_float(
+                name="multimodal_weight",
+                low=self.hparams.multimodal_weight.low,
+                high=self.hparams.multimodal_weight.high,
+                log=self.hparams.multimodal_weight.log,
+            )
+        if self.hparams.modality_split_weight:
+            params["modality_split_weight"] = trial.suggest_float(
+                name="modality_split_weight",
+                low=self.hparams.modality_split_weight.low,
+                high=self.hparams.modality_split_weight.high,
+                log=self.hparams.modality_split_weight.log,
+            )
+        if self.hparams.dynamic_loss_weight:
+            params["dynamic_loss_weight"] = trial.suggest_float(
+                name="dynamic_loss_weight",
+                low=self.hparams.dynamic_loss_weight.low,
+                high=self.hparams.dynamic_loss_weight.high,
+                log=self.hparams.dynamic_loss_weight.log,
+            )
         if self.hparams.lr:
             params["lr"] = trial.suggest_float(
                 name="lr",
@@ -153,6 +175,18 @@ class MultiModalTuner:
                 log=self.hparams.eta_min.log,
             )
 
+        image_backbone = HuggingFaceModel(
+            modality="image",
+            pretrained_model_name=self.module_params.image_backbone,
+            num_labels=self.module_params.num_labels,
+            is_backbone=self.module_params.is_backbone,
+        )
+        text_backbone = HuggingFaceModel(
+            modality="text",
+            pretrained_model_name=self.module_params.text_backbone,
+            num_labels=self.module_params.num_labels,
+            is_backbone=self.module_params.is_backbone,
+        )
         model = MultiModalTransformer(
             model_dims=self.module_params.model_dims,
             num_heads=params["num_heads"],
@@ -170,10 +204,15 @@ class MultiModalTuner:
             scale_embedding=params["scale_embedding"],
         )
         architecture = MultiModalArchitecture(
+            image_backbone=image_backbone,
+            text_backbone=text_backbone,
             model=model,
             num_labels=self.module_params.num_labels,
             average=self.module_params.average,
             strategy=self.module_params.strategy,
+            multimodal_weight=params["multimodal_weight"],
+            modality_split_weight=params["modality_split_weight"],
+            dynamic_loss_weight=params["dynamic_loss_weight"],
             lr=params["lr"],
             t_max=params["t_max"],
             eta_min=params["eta_min"],
