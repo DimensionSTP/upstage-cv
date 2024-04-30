@@ -11,7 +11,6 @@ defaults:
 package_name: upstage-cv
 project_dir: /home/ddang/${package_name}
 connected_dir: /data/${package_name}
-submission_name: ${upload_user}_${model_type}-epoch${epoch}
 
 seed: 2024
 
@@ -20,7 +19,7 @@ num_labels: 17
 split:
   train: train
   val: val
-  predict: predict
+  test: test
 
 batch_size: 24
 
@@ -42,11 +41,12 @@ tracking_direction: max
 patience: 3
 min_delta: 0
 
-devices: -1
+devices: 4
 accelerator: gpu
 strategy: ddp
 log_every_n_steps: 10
 precision: 32
+accumulate_grad_batches: 1
 epoch: 100
 
 model_name: HuggingFace_${modality}
@@ -59,9 +59,12 @@ hparams_save_path: ${connected_dir}/hparams/${model_name}/${dataset_name}/${num_
 tuned_hparams_path: ${hparams_save_path}/best_params.json
 
 project_name: ${model_name}-${dataset_name}-${mode}
-save_detail: ${upload_user}_${model_type}
+save_detail: ${upload_user}_${model_type}-bs${batch_size}x${devices}x${accumulate_grad_batches}
 resumed_step: 0
 ckpt_path: ${callbacks.model_checkpoint.dirpath}/epoch${epoch}.ckpt
+
+logit_name: ${save_detail}-epoch${epoch}
+submission_name: ${save_detail}-epoch${epoch}
 
 run_name: ${project_name}
 work_dir: ${hydra:runtime.cwd}
