@@ -95,15 +95,15 @@ class UpStageDocsDataset(Dataset):
                 data = train_data
             else:
                 data = val_data
-        elif self.split == "predict":
-            csv_path = f"{self.data_path}/text.csv"
+        elif self.split == "test":
+            csv_path = f"{self.data_path}/{self.split}.csv"
             data = pd.read_csv(csv_path)
             data = data.fillna("_")
         else:
             raise ValueError(f"Inavalid split: {self.split}")
 
         if self.modality in ["image", "multi-modality"]:
-            if self.split in ["train", "predict"]:
+            if self.split in ["train", "test"]:
                 datas = [
                     f"{self.data_path}/{self.split}/{file_name}"
                     for file_name in data["ID"]

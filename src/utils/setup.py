@@ -41,14 +41,14 @@ class SetUp:
             pin_memory=True,
         )
 
-    def get_predict_loader(self) -> DataLoader:
-        predict_dataset: Dataset = instantiate(
+    def get_test_loader(self) -> DataLoader:
+        test_dataset: Dataset = instantiate(
             self.config.dataset,
-            split=self.config.split.predict,
+            split=self.config.split.test,
         )
         return DataLoader(
-            dataset=predict_dataset,
-            batch_size=1,
+            dataset=test_dataset,
+            batch_size=self.config.batch_size,
             shuffle=False,
             pin_memory=True,
         )
