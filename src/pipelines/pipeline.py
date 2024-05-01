@@ -257,9 +257,8 @@ def predict(
         )
         raise e
 
-    flattened_logits = [logit.view(-1) for logit in logits]
     all_logits = torch.cat(
-        flattened_logits,
+        logits,
         dim=0,
     ).numpy()
     all_predictions = np.argmax(
@@ -272,7 +271,7 @@ def predict(
         f"{config.connected_dir}/logits/{config.logit_name}.npy",
         all_logits,
     )
-    pred_df = pd.read_csv(f"{config.connected_dir}/data/predict.csv")
+    pred_df = pd.read_csv(f"{config.connected_dir}/data/test.csv")
     pred_df["target"] = all_predictions
     if not os.path.exists(f"{config.connected_dir}/submissions"):
         os.makedirs(f"{config.connected_dir}/submissions")
