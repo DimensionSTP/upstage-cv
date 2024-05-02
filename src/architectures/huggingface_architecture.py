@@ -1,8 +1,7 @@
-from typing import Tuple, Dict, Any
+from typing import Dict, Any
 
 import torch
 from torch import optim, nn
-from torch.nn import functional as F
 from torchmetrics import MetricCollection, F1Score, Accuracy
 
 from lightning.pytorch import LightningModule
@@ -50,16 +49,18 @@ class HuggingFaceArchitecture(LightningModule):
 
     def forward(
         self,
-        encoded: torch.Tensor,
-    ) -> torch.Tensor:
+        encoded: Dict[str, torch.Tensor],
+    ) -> Dict[str, torch.Tensor]:
         output = self.model(encoded)
         return output
 
     def step(
         self,
-        batch: Tuple[torch.Tensor, torch.Tensor],
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        batch: Dict[str, Any],
+    ) -> Dict[str, torch.Tensor]:
         encoded, index = batch
+        encoded = batch["encoded"]
+        index = batch["index"]
         output = self(encoded=encoded)
         loss = output.loss
         logit = output.logits
@@ -68,7 +69,13 @@ class HuggingFaceArchitecture(LightningModule):
             dim=1,
         )
         label = encoded["labels"]
-        return (loss, logit, pred, label, index)
+        return {
+            "loss": loss,
+            "logit": logit,
+            "pred": pred,
+            "label": label,
+            "index": index,
+        }
 
     def configure_optimizers(self) -> Dict[str, Any]:
         if self.strategy == "deepspeed_stage_3":
@@ -90,21 +97,27 @@ class HuggingFaceArchitecture(LightningModule):
                 lr=self.lr,
             )
         scheduler = optim.lr_scheduler.CosineAnnealingLR(
-            optimizer,
+            optimizer=optimizer,
             T_max=self.t_max,
             eta_min=self.eta_min,
         )
         return {
             "optimizer": optimizer,
-            "lr_scheduler": {"scheduler": scheduler, "interval": self.interval},
+            "lr_scheduler": {
+                "scheduler": scheduler,
+                "interval": self.interval,
+            },
         }
 
     def training_step(
         self,
-        batch: Tuple[torch.Tensor, torch.Tensor],
+        batch: Dict[str, Any],
         batch_idx: int,
     ) -> Dict[str, torch.Tensor]:
-        loss, _, pred, label, _ = self.step(batch)
+        output = self.step(batch)
+        loss = output["loss"]
+        pred = output["pred"]
+        label = output["label"]
         metrics = self.train_metrics(
             pred,
             label,
@@ -124,14 +137,21 @@ class HuggingFaceArchitecture(LightningModule):
             prog_bar=True,
             sync_dist=True,
         )
-        return {"loss": loss, "pred": pred, "label": label}
+        return {
+            "loss": loss,
+            "pred": pred,
+            "label": label,
+        }
 
     def validation_step(
         self,
-        batch: Tuple[torch.Tensor, torch.Tensor],
+        batch: Dict[str, Any],
         batch_idx: int,
     ) -> Dict[str, torch.Tensor]:
-        loss, _, pred, label, _ = self.step(batch)
+        output = self.step(batch)
+        loss = output["loss"]
+        pred = output["pred"]
+        label = output["label"]
         metrics = self.val_metrics(
             pred,
             label,
@@ -151,14 +171,21 @@ class HuggingFaceArchitecture(LightningModule):
             prog_bar=True,
             sync_dist=True,
         )
-        return {"loss": loss, "pred": pred, "label": label}
+        return {
+            "loss": loss,
+            "pred": pred,
+            "label": label,
+        }
 
     def test_step(
         self,
-        batch: Tuple[torch.Tensor, torch.Tensor],
+        batch: Dict[str, Any],
         batch_idx: int,
     ) -> Dict[str, torch.Tensor]:
-        loss, _, pred, label, _ = self.step(batch)
+        output = self.step(batch)
+        loss = output["loss"]
+        pred = output["pred"]
+        label = output["label"]
         metrics = self.test_metrics(
             pred,
             label,
@@ -178,16 +205,28 @@ class HuggingFaceArchitecture(LightningModule):
             prog_bar=True,
             sync_dist=True,
         )
-        return {"loss": loss, "pred": pred, "label": label}
+        return {
+            "loss": loss,
+            "pred": pred,
+            "label": label,
+        }
 
     def predict_step(
         self,
-        batch: Tuple[torch.Tensor, torch.Tensor],
+        batch: Dict[str, Any],
         batch_idx: int,
     ) -> torch.Tensor:
-        _, logit, _, _, index = self.step(batch)
+        output = self.step(batch)
+        logit = output["logit"]
+        index = output["index"]
         index = index.unsqueeze(-1).float()
-        output = torch.cat((logit, index), dim=-1)
+        output = torch.cat(
+            (
+                logit,
+                index,
+            ),
+            dim=-1,
+        )
         gathered_output = self.all_gather(output)
         return gathered_output
 
