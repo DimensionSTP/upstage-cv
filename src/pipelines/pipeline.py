@@ -221,8 +221,6 @@ def predict(
 
     trainer: Trainer = instantiate(
         config.trainer,
-        devices=1,
-        strategy="auto",
         callbacks=callbacks,
         logger=logger,
         _convert_="partial",
@@ -257,6 +255,20 @@ def predict(
         )
         raise e
 
+    if len(logits[0].shape) == 3:
+        logits = [
+            torch.cat(
+                logit.split(
+                    1,
+                    dim=0,
+                ),
+                dim=1,
+            ).view(
+                -1,
+                logits[0].shape[-1],
+            )
+            for logit in logits
+        ]
     all_logits = torch.cat(
         logits,
         dim=0,
