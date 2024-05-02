@@ -63,6 +63,8 @@ save_detail: ${upload_user}_${model_type}-bs${batch_size}x${devices}x${accumulat
 resumed_step: 0
 ckpt_path: ${callbacks.model_checkpoint.dirpath}/epoch${epoch}.ckpt
 
+submission_file_name: test
+target_column_name: target
 logit_name: ${save_detail}-epoch${epoch}
 submission_name: ${save_detail}-epoch${epoch}
 
