@@ -5,7 +5,12 @@ import timm
 
 
 class TimmModel(nn.Module):
-    def __init__(self, model_type: str, pretrained: str, num_labels: int) -> None:
+    def __init__(
+        self,
+        model_type: str,
+        pretrained: str,
+        num_labels: int,
+    ) -> None:
         super().__init__()
         if pretrained == "pretrained":
             is_pretrained = True

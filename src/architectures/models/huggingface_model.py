@@ -1,3 +1,5 @@
+from typing import Dict
+
 import torch
 from torch import nn
 
@@ -35,7 +37,7 @@ class HuggingFaceModel(nn.Module):
 
     def forward(
         self,
-        encoded: torch.Tensor,
-    ) -> torch.Tensor:
+        encoded: Dict[str, torch.Tensor],
+    ) -> Dict[str, torch.Tensor]:
         output = self.model(**encoded)
         return output

@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -84,8 +86,24 @@ class MultiModalTransformer(nn.Module):
             image = image.unsqueeze(0)
         if text.dim() <= 2:
             text = text.unsqueeze(0)
-        image = self.image_encoder(image.transpose(1, 2)).transpose(1, 2)
-        text = self.text_encoder(text.transpose(1, 2)).transpose(1, 2)
+        image = self.image_encoder(
+            image.transpose(
+                1,
+                2,
+            )
+        ).transpose(
+            1,
+            2,
+        )
+        text = self.text_encoder(
+            text.transpose(
+                1,
+                2,
+            )
+        ).transpose(
+            1,
+            2,
+        )
         image = self.image_text(
             query=image,
             key=text,
@@ -113,14 +131,18 @@ class MultiModalTransformer(nn.Module):
             ],
             dim=2,
         )
-        pooler_output = features[:, 0, :].squeeze()
+        pooler_output = features[
+            :,
+            0,
+            :,
+        ].squeeze()
         out = pooler_output + self.fc2(self.dropout(F.relu(self.fc1(pooler_output))))
         if out.dim() == 1:
             out = out.unsqueeze(0)
         return self.out_layer(out)
 
     @staticmethod
-    def get_network(**kwargs) -> nn.Module:
+    def get_network(**kwargs: Dict[str, Any]) -> nn.Module:
         return CrossModalTransformer(
             model_dims=kwargs["model_dims"],
             num_heads=kwargs["num_heads"],
