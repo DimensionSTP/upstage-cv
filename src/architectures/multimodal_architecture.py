@@ -109,6 +109,8 @@ class MultiModalArchitecture(LightningModule):
         ) - self.dynamic_loss_weight * (current_epoch / total_epochs)
         loss = weighted_multimodal_loss + weighted_image_loss + weighted_text_loss
         logit = multimodal_output
+        if logit.dim() == 1:
+            logit = logit.unsqueeze(0)
         pred = torch.argmax(
             logit,
             dim=1,
