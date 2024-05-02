@@ -76,7 +76,14 @@ class UpStageDocsDataset(Dataset):
             modality="text",
         )
 
-        return (encoded_image, image_mask, encoded_text, text_mask, self.labels[idx])
+        return (
+            encoded_image,
+            image_mask,
+            encoded_text,
+            text_mask,
+            self.labels[idx],
+            idx,
+        )
 
     def get_dataset(self) -> Tuple[List[str], List[str]]:
         if self.split in ["train", "val"]:

@@ -44,7 +44,7 @@ class UpStageDocsDataset(Dataset):
         image = np.array(Image.open(image_path).convert("RGB"))
         image = self.transform(image=image)["image"]
         label = self.labels[idx]
-        return (image, label)
+        return (image, label, idx)
 
     def get_dataset(self) -> Tuple[List[str], List[str]]:
         if self.split in ["train", "val"]:

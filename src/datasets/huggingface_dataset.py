@@ -77,7 +77,7 @@ class UpStageDocsDataset(Dataset):
             [self.labels[idx]],
             dtype=torch.long,
         ).squeeze(0)
-        return encoded
+        return (encoded, idx)
 
     def get_dataset(self) -> Tuple[List[str], List[str]]:
         if self.split in ["train", "val"]:
