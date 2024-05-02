@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, List
+from typing import Dict, Any, List
 import re
 
 import numpy as np
@@ -27,7 +27,7 @@ class UpStageDocsDataset(Dataset):
         augmentation_probability: float,
         augmentations: List[str],
         text_max_length: int,
-    ):
+    ) -> None:
         self.data_path = data_path
         self.split = split
         self.split_ratio = split_ratio
@@ -39,19 +39,22 @@ class UpStageDocsDataset(Dataset):
             text_pretrained_model_name,
             use_fast=True,
         )
-        self.image_paths, self.texts, self.labels = self.get_dataset()
+        dataset = self.get_dataset()
+        self.image_paths = dataset["image_paths"]
+        self.texts = dataset["texts"]
+        self.labels = dataset["labels"]
         self.augmentation_probability = augmentation_probability
         self.augmentations = augmentations
         self.transform = self.get_transform()
         self.text_max_length = text_max_length
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.labels)
 
     def __getitem__(
         self,
         idx: int,
-    ) -> Dict[str, torch.Tensor]:
+    ) -> Dict[str, Any]:
         image = np.array(Image.open(self.image_paths[idx]).convert("RGB"))
         image = self.transform(image=image)["image"]
         encoded_image = self.encode_image(image)
@@ -76,16 +79,16 @@ class UpStageDocsDataset(Dataset):
             modality="text",
         )
 
-        return (
-            encoded_image,
-            image_mask,
-            encoded_text,
-            text_mask,
-            self.labels[idx],
-            idx,
-        )
+        return {
+            "encoded_image": encoded_image,
+            "image_mask": image_mask,
+            "encoded_text": encoded_text,
+            "text_mask": text_mask,
+            "label": self.labels[idx],
+            "index": idx,
+        }
 
-    def get_dataset(self) -> Tuple[List[str], List[str]]:
+    def get_dataset(self) -> Dict[str, List[Any]]:
         if self.split in ["train", "val"]:
             csv_path = f"{self.data_path}/train.csv"
             data = pd.read_csv(csv_path)
@@ -118,9 +121,13 @@ class UpStageDocsDataset(Dataset):
             ]
         texts = data["text"].tolist()
         labels = data["target"].tolist()
-        return (image_paths, texts, labels)
+        return {
+            "image_paths": image_paths,
+            "texts": texts,
+            "labels": labels,
+        }
 
-    def get_transform(self):
+    def get_transform(self) -> A.Compose:
         transforms = []
         if self.split in ["train", "val"]:
             for aug in self.augmentations:
@@ -179,7 +186,7 @@ class UpStageDocsDataset(Dataset):
     def encode_image(
         self,
         data: np.ndarray,
-    ) -> torch.Tensor:
+    ) -> Dict[str, torch.Tensor]:
         encoded = self.image_encoder(
             data,
             return_tensors="pt",
@@ -191,14 +198,22 @@ class UpStageDocsDataset(Dataset):
     def normalize_string(
         data: str,
     ) -> str:
-        data = re.sub(r"[\s]", r" ", str(data))
-        data = re.sub(r"[^a-zA-Z가-힣ㄱ-ㅎ0-9.!?]+", r" ", str(data))
+        data = re.sub(
+            r"[\s]",
+            r" ",
+            str(data),
+        )
+        data = re.sub(
+            r"[^a-zA-Z가-힣ㄱ-ㅎ0-9.!?]+",
+            r" ",
+            str(data),
+        )
         return data
 
     def encode_text(
         self,
         data: str,
-    ) -> torch.Tensor:
+    ) -> Dict[str, torch.Tensor]:
         encoded = self.text_encoder(
             data,
             padding="max_length",

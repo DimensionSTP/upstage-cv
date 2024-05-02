@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, List
+from typing import Dict, Any, List
 import re
 
 import numpy as np
@@ -27,7 +27,7 @@ class UpStageDocsDataset(Dataset):
         augmentation_probability: float,
         augmentations: List[str],
         text_max_length: int,
-    ):
+    ) -> None:
         self.data_path = data_path
         self.split = split
         self.split_ratio = split_ratio
@@ -50,19 +50,21 @@ class UpStageDocsDataset(Dataset):
             )
         else:
             raise ValueError(f"Invalid modality: {self.modality}")
-        self.datas, self.labels = self.get_dataset()
+        dataset = self.get_dataset()
+        self.datas = dataset["datas"]
+        self.labels = dataset["labels"]
         self.augmentation_probability = augmentation_probability
         self.augmentations = augmentations
         self.transform = self.get_transform()
         self.text_max_length = text_max_length
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.labels)
 
     def __getitem__(
         self,
         idx: int,
-    ) -> Dict[str, torch.Tensor]:
+    ) -> Dict[str, Any]:
         if self.modality in ["image", "multi-modality"]:
             data = np.array(Image.open(self.datas[idx]).convert("RGB"))
             data = self.transform(image=data)["image"]
@@ -77,9 +79,12 @@ class UpStageDocsDataset(Dataset):
             [self.labels[idx]],
             dtype=torch.long,
         ).squeeze(0)
-        return (encoded, idx)
+        return {
+            "encoded": encoded,
+            "index": idx,
+        }
 
-    def get_dataset(self) -> Tuple[List[str], List[str]]:
+    def get_dataset(self) -> Dict[str, List[Any]]:
         if self.split in ["train", "val"]:
             csv_path = f"{self.data_path}/train.csv"
             data = pd.read_csv(csv_path)
@@ -115,9 +120,12 @@ class UpStageDocsDataset(Dataset):
         else:
             datas = data["text"].tolist()
         labels = data["target"].tolist()
-        return (datas, labels)
+        return {
+            "datas": datas,
+            "labels": labels,
+        }
 
-    def get_transform(self):
+    def get_transform(self) -> A.Compose:
         transforms = []
         if self.split in ["train", "val"]:
             for aug in self.augmentations:
@@ -176,7 +184,7 @@ class UpStageDocsDataset(Dataset):
     def encode_image(
         self,
         data: np.ndarray,
-    ) -> torch.Tensor:
+    ) -> Dict[str, torch.Tensor]:
         encoded = self.data_encoder(
             data,
             return_tensors="pt",
@@ -188,14 +196,22 @@ class UpStageDocsDataset(Dataset):
     def normalize_string(
         data: str,
     ) -> str:
-        data = re.sub(r"[\s]", r" ", str(data))
-        data = re.sub(r"[^a-zA-Z가-힣ㄱ-ㅎ0-9.!?]+", r" ", str(data))
+        data = re.sub(
+            r"[\s]",
+            r" ",
+            str(data),
+        )
+        data = re.sub(
+            r"[^a-zA-Z가-힣ㄱ-ㅎ0-9.!?]+",
+            r" ",
+            str(data),
+        )
         return data
 
     def encode_text(
         self,
         data: str,
-    ) -> torch.Tensor:
+    ) -> Dict[str, torch.Tensor]:
         encoded = self.data_encoder(
             data,
             padding="max_length",

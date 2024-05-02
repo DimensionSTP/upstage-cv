@@ -1,11 +1,10 @@
-from typing import Tuple, List
+from typing import Dict, Any, List
 
 import numpy as np
 import pandas as pd
 from PIL import Image
 from sklearn.model_selection import train_test_split
 
-import torch
 from torch.utils.data import Dataset
 
 import albumentations as A
@@ -22,7 +21,7 @@ class UpStageDocsDataset(Dataset):
         image_size: int,
         augmentation_probability: float,
         augmentations: List[str],
-    ):
+    ) -> None:
         self.data_path = data_path
         self.split = split
         self.split_ratio = split_ratio
@@ -30,23 +29,29 @@ class UpStageDocsDataset(Dataset):
         self.image_size = image_size
         self.augmentation_probability = augmentation_probability
         self.augmentations = augmentations
-        self.image_paths, self.labels = self.get_dataset()
+        dataset = self.get_dataset()
+        self.image_paths = dataset["image_paths"]
+        self.labels = dataset["labels"]
         self.transform = self.get_transform()
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.labels)
 
     def __getitem__(
         self,
         idx: int,
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> Dict[str, Any]:
         image_path = self.image_paths[idx]
         image = np.array(Image.open(image_path).convert("RGB"))
         image = self.transform(image=image)["image"]
         label = self.labels[idx]
-        return (image, label, idx)
+        return {
+            "image": image,
+            "label": label,
+            "index": idx,
+        }
 
-    def get_dataset(self) -> Tuple[List[str], List[str]]:
+    def get_dataset(self) -> Dict[str, List[Any]]:
         if self.split in ["train", "val"]:
             csv_path = f"{self.data_path}/train.csv"
             data = pd.read_csv(csv_path)
@@ -76,9 +81,12 @@ class UpStageDocsDataset(Dataset):
                 f"{self.data_path}/train/{file_name}" for file_name in data["ID"]
             ]
         labels = data["target"].tolist()
-        return (image_paths, labels)
+        return {
+            "image_paths": image_paths,
+            "labels": labels,
+        }
 
-    def get_transform(self):
+    def get_transform(self) -> A.Compose:
         transforms = [A.Resize(self.image_size, self.image_size)]
         if self.split in ["train", "val"]:
             for aug in self.augmentations:
