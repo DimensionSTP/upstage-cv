@@ -24,6 +24,7 @@ split:
 batch_size: 16
 
 split_ratio: 0.1
+target_column_name: target
 image_upload_user: microsoft
 image_model_type: dit-large-finetuned-rvlcdip
 image_pretrained_model_name: ${image_upload_user}/${image_model_type}
@@ -80,7 +81,6 @@ resumed_step: 0
 ckpt_path: ${callbacks.model_checkpoint.dirpath}/epoch${epoch}.ckpt
 
 submission_file_name: test
-target_column_name: target
 logit_name: ${save_detail}-epoch${epoch}
 submission_name: ${save_detail}-epoch${epoch}
 
