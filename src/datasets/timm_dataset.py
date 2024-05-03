@@ -18,6 +18,7 @@ class UpStageDocsDataset(Dataset):
         split: str,
         split_ratio: float,
         seed: int,
+        target_column_name: str,
         image_size: int,
         augmentation_probability: float,
         augmentations: List[str],
@@ -26,6 +27,7 @@ class UpStageDocsDataset(Dataset):
         self.split = split
         self.split_ratio = split_ratio
         self.seed = seed
+        self.target_column_name = target_column_name
         self.image_size = image_size
         self.augmentation_probability = augmentation_probability
         self.augmentations = augmentations
@@ -60,7 +62,7 @@ class UpStageDocsDataset(Dataset):
                 test_size=self.split_ratio,
                 random_state=self.seed,
                 shuffle=True,
-                stratify=data["target"],
+                stratify=data[self.target_column_name],
             )
             if self.split == "train":
                 data = train_data
@@ -80,7 +82,7 @@ class UpStageDocsDataset(Dataset):
             image_paths = [
                 f"{self.data_path}/train/{file_name}" for file_name in data["ID"]
             ]
-        labels = data["target"].tolist()
+        labels = data[self.target_column_name].tolist()
         return {
             "image_paths": image_paths,
             "labels": labels,

@@ -3,6 +3,7 @@ data_path: ${connected_dir}/data
 split: ${split.train}
 split_ratio: ${split_ratio}
 seed: ${seed}
+target_column_name: ${target_column_name}
 modality: ${modality}
 pretrained_model_name: ${pretrained_model_name}
 augmentation_probability: 0.2

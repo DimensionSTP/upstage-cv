@@ -22,6 +22,7 @@ class UpStageDocsDataset(Dataset):
         split: str,
         split_ratio: float,
         seed: int,
+        target_column_name: str,
         image_pretrained_model_name: str,
         text_pretrained_model_name: str,
         augmentation_probability: float,
@@ -32,6 +33,7 @@ class UpStageDocsDataset(Dataset):
         self.split = split
         self.split_ratio = split_ratio
         self.seed = seed
+        self.target_column_name = target_column_name
         self.image_encoder = AutoImageProcessor.from_pretrained(
             image_pretrained_model_name,
         )
@@ -98,7 +100,7 @@ class UpStageDocsDataset(Dataset):
                 test_size=self.split_ratio,
                 random_state=self.seed,
                 shuffle=True,
-                stratify=data["target"],
+                stratify=data[self.target_column_name],
             )
             if self.split == "train":
                 data = train_data
@@ -120,7 +122,7 @@ class UpStageDocsDataset(Dataset):
                 f"{self.data_path}/train/{file_name}" for file_name in data["ID"]
             ]
         texts = data["text"].tolist()
-        labels = data["target"].tolist()
+        labels = data[self.target_column_name].tolist()
         return {
             "image_paths": image_paths,
             "texts": texts,
