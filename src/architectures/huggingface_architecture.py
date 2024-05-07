@@ -50,25 +50,36 @@ class HuggingFaceArchitecture(LightningModule):
     def forward(
         self,
         encoded: Dict[str, torch.Tensor],
+        mode: str,
     ) -> Dict[str, torch.Tensor]:
+        if mode == "train":
+            self.model.train()
+        elif mode == "eval":
+            self.model.eval()
+        else:
+            raise ValueError(f"Invalid model mode: {mode}")
         output = self.model(encoded)
         return output
 
     def step(
         self,
         batch: Dict[str, Any],
+        mode: str,
     ) -> Dict[str, torch.Tensor]:
         encoded, index = batch
         encoded = batch["encoded"]
+        label = encoded["labels"]
         index = batch["index"]
-        output = self(encoded=encoded)
-        loss = output.loss
+        output = self(
+            encoded=encoded,
+            mode=mode,
+        )
         logit = output.logits
         pred = torch.argmax(
             logit,
             dim=1,
         )
-        label = encoded["labels"]
+        loss = output.loss
         return {
             "loss": loss,
             "logit": logit,
@@ -114,7 +125,10 @@ class HuggingFaceArchitecture(LightningModule):
         batch: Dict[str, Any],
         batch_idx: int,
     ) -> Dict[str, torch.Tensor]:
-        output = self.step(batch)
+        output = self.step(
+            batch=batch,
+            mode="train",
+        )
         loss = output["loss"]
         pred = output["pred"]
         label = output["label"]
@@ -148,7 +162,10 @@ class HuggingFaceArchitecture(LightningModule):
         batch: Dict[str, Any],
         batch_idx: int,
     ) -> Dict[str, torch.Tensor]:
-        output = self.step(batch)
+        output = self.step(
+            batch=batch,
+            mode="eval",
+        )
         loss = output["loss"]
         pred = output["pred"]
         label = output["label"]
@@ -182,7 +199,10 @@ class HuggingFaceArchitecture(LightningModule):
         batch: Dict[str, Any],
         batch_idx: int,
     ) -> Dict[str, torch.Tensor]:
-        output = self.step(batch)
+        output = self.step(
+            batch=batch,
+            mode="eval",
+        )
         loss = output["loss"]
         pred = output["pred"]
         label = output["label"]
@@ -216,7 +236,10 @@ class HuggingFaceArchitecture(LightningModule):
         batch: Dict[str, Any],
         batch_idx: int,
     ) -> torch.Tensor:
-        output = self.step(batch)
+        output = self.step(
+            batch=batch,
+            mode="eval",
+        )
         logit = output["logit"]
         index = output["index"]
         index = index.unsqueeze(-1).float()

@@ -65,7 +65,18 @@ class MultiModalArchitecture(LightningModule):
         image_mask: torch.Tensor,
         encoded_text: torch.Tensor,
         text_mask: torch.Tensor,
+        mode: str,
     ) -> Dict[str, torch.Tensor]:
+        if mode == "train":
+            self.image_backbone.train()
+            self.text_backbone.train()
+            self.model.train()
+        elif mode == "eval":
+            self.image_backbone.eval()
+            self.text_backbone.eval()
+            self.model.eval()
+        else:
+            raise ValueError(f"Invalid model mode: {mode}")
         image_output = self.image_backbone(encoded_image)
         text_output = self.text_backbone(encoded_text)
         multimodal_output = self.model(
@@ -83,6 +94,7 @@ class MultiModalArchitecture(LightningModule):
     def step(
         self,
         batch: Dict[str, Any],
+        mode: str,
     ) -> Dict[str, torch.Tensor]:
         image = batch["encoded_image"]
         image_mask = batch["image_mask"]
@@ -95,15 +107,23 @@ class MultiModalArchitecture(LightningModule):
             image_mask=image_mask,
             encoded_text=text,
             text_mask=text_mask,
+            mode=mode,
         )
         image_output = outputs["image_output"]
         text_output = outputs["text_output"]
         multimodal_output = outputs["multimodal_output"]
-
+        logit = multimodal_output
+        if logit.dim() == 1:
+            logit = logit.unsqueeze(0)
+            label = label.unsqueeze(0)
+        pred = torch.argmax(
+            logit,
+            dim=1,
+        )
         image_loss = image_output.loss
         text_loss = text_output.loss
         multimodal_loss = F.cross_entropy(
-            multimodal_output,
+            logit,
             label,
         )
 
@@ -118,13 +138,6 @@ class MultiModalArchitecture(LightningModule):
             self.text_weight * text_loss
         ) - self.dynamic_loss_weight * (current_epoch / total_epochs)
         loss = weighted_multimodal_loss + weighted_image_loss + weighted_text_loss
-        logit = multimodal_output
-        if logit.dim() == 1:
-            logit = logit.unsqueeze(0)
-        pred = torch.argmax(
-            logit,
-            dim=1,
-        )
         return {
             "loss": loss,
             "logit": logit,
@@ -170,7 +183,10 @@ class MultiModalArchitecture(LightningModule):
         batch: Dict[str, Any],
         batch_idx: int,
     ) -> Dict[str, torch.Tensor]:
-        output = self.step(batch)
+        output = self.step(
+            batch=batch,
+            mode="train",
+        )
         loss = output["loss"]
         pred = output["pred"]
         label = output["label"]
@@ -204,7 +220,10 @@ class MultiModalArchitecture(LightningModule):
         batch: Dict[str, Any],
         batch_idx: int,
     ) -> Dict[str, torch.Tensor]:
-        output = self.step(batch)
+        output = self.step(
+            batch=batch,
+            mode="eval",
+        )
         loss = output["loss"]
         pred = output["pred"]
         label = output["label"]
@@ -238,7 +257,10 @@ class MultiModalArchitecture(LightningModule):
         batch: Dict[str, Any],
         batch_idx: int,
     ) -> Dict[str, torch.Tensor]:
-        output = self.step(batch)
+        output = self.step(
+            batch=batch,
+            mode="eval",
+        )
         loss = output["loss"]
         pred = output["pred"]
         label = output["label"]
@@ -272,7 +294,10 @@ class MultiModalArchitecture(LightningModule):
         batch: Dict[str, Any],
         batch_idx: int,
     ) -> torch.Tensor:
-        output = self.step(batch)
+        output = self.step(
+            batch=batch,
+            mode="eval",
+        )
         logit = output["logit"]
         index = output["index"]
         index = index.unsqueeze(-1).float()
