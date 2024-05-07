@@ -63,14 +63,14 @@ class TimmArchitecture(LightningModule):
         label = batch["label"]
         index = batch["index"]
         output = self(image=image)
-        loss = F.cross_entropy(
-            output,
-            label,
-        )
         logit = output
         pred = torch.argmax(
             logit,
             dim=1,
+        )
+        loss = F.cross_entropy(
+            logit,
+            label,
         )
         return {
             "loss": loss,
