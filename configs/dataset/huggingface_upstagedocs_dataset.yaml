@@ -4,6 +4,8 @@ split: ${split.train}
 split_ratio: ${split_ratio}
 seed: ${seed}
 target_column_name: ${target_column_name}
+num_devices: ${devices}
+batch_size: ${batch_size}
 modality: ${modality}
 pretrained_model_name: ${pretrained_model_name}
 augmentation_probability: 0.2

@@ -23,6 +23,8 @@ class UpStageDocsDataset(Dataset):
         split_ratio: float,
         seed: int,
         target_column_name: str,
+        num_devices: int,
+        batch_size: int,
         modality: str,
         pretrained_model_name: str,
         augmentation_probability: float,
@@ -34,6 +36,8 @@ class UpStageDocsDataset(Dataset):
         self.split_ratio = split_ratio
         self.seed = seed
         self.target_column_name = target_column_name
+        self.num_devices = num_devices
+        self.batch_size = batch_size
         self.modality = modality
         if self.modality == "image":
             self.data_encoder = AutoImageProcessor.from_pretrained(
@@ -110,6 +114,24 @@ class UpStageDocsDataset(Dataset):
             csv_path = f"{self.data_path}/test.csv"
             data = pd.read_csv(csv_path)
             data = data.fillna("_")
+            if self.num_devices > 1:
+                last_row = data.iloc[-1]
+                total_batch_size = self.num_devices * self.batch_size
+                remainder = (len(data) % total_batch_size) % self.num_devices
+                if remainder != 0:
+                    num_dummies = self.num_devices - remainder
+                    repeated_rows = pd.DataFrame([last_row] * num_dummies)
+                    repeated_rows.reset_index(
+                        drop=True,
+                        inplace=True,
+                    )
+                    data = pd.concat(
+                        [
+                            data,
+                            repeated_rows,
+                        ],
+                        ignore_index=True,
+                    )
         else:
             raise ValueError(f"Inavalid split: {self.split}")
 
