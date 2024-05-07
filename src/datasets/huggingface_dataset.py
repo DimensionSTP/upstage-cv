@@ -106,6 +106,10 @@ class UpStageDocsDataset(Dataset):
             csv_path = f"{self.data_path}/{self.split}.csv"
             data = pd.read_csv(csv_path)
             data = data.fillna("_")
+        elif self.split == "predict":
+            csv_path = f"{self.data_path}/test.csv"
+            data = pd.read_csv(csv_path)
+            data = data.fillna("_")
         else:
             raise ValueError(f"Inavalid split: {self.split}")
 
@@ -115,9 +119,13 @@ class UpStageDocsDataset(Dataset):
                     f"{self.data_path}/{self.split}/{file_name}"
                     for file_name in data["ID"]
                 ]
-            else:
+            elif self.split == "val":
                 datas = [
                     f"{self.data_path}/train/{file_name}" for file_name in data["ID"]
+                ]
+            else:
+                datas = [
+                    f"{self.data_path}/test/{file_name}" for file_name in data["ID"]
                 ]
         else:
             datas = data["text"].tolist()

@@ -53,6 +53,18 @@ class SetUp:
             pin_memory=True,
         )
 
+    def get_predict_loader(self) -> DataLoader:
+        predict_dataset: Dataset = instantiate(
+            self.config.dataset,
+            split=self.config.split.predict,
+        )
+        return DataLoader(
+            dataset=predict_dataset,
+            batch_size=self.config.batch_size,
+            shuffle=False,
+            pin_memory=True,
+        )
+
     def get_architecture(self) -> LightningModule:
         architecture: LightningModule = instantiate(
             self.config.architecture,
