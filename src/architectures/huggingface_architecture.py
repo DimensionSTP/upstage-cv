@@ -66,7 +66,6 @@ class HuggingFaceArchitecture(LightningModule):
         batch: Dict[str, Any],
         mode: str,
     ) -> Dict[str, torch.Tensor]:
-        encoded, index = batch
         encoded = batch["encoded"]
         label = encoded["labels"]
         index = batch["index"]
