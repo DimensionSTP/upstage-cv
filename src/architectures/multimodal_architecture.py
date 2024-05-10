@@ -118,7 +118,7 @@ class MultiModalArchitecture(LightningModule):
             label = label.unsqueeze(0)
         pred = torch.argmax(
             logit,
-            dim=1,
+            dim=-1,
         )
         image_loss = image_output.loss
         text_loss = text_output.loss

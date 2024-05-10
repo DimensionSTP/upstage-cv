@@ -66,7 +66,7 @@ class TimmArchitecture(LightningModule):
         logit = output
         pred = torch.argmax(
             logit,
-            dim=1,
+            dim=-1,
         )
         loss = F.cross_entropy(
             logit,
