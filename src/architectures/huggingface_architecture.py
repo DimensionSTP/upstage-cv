@@ -17,7 +17,7 @@ class HuggingFaceArchitecture(LightningModule):
         average: str,
         strategy: str,
         lr: float,
-        t_max: int,
+        period: int,
         eta_min: float,
         interval: str,
     ) -> None:
@@ -25,7 +25,7 @@ class HuggingFaceArchitecture(LightningModule):
         self.model = model
         self.strategy = strategy
         self.lr = lr
-        self.t_max = t_max
+        self.period = period
         self.eta_min = eta_min
         self.interval = interval
 
@@ -106,9 +106,10 @@ class HuggingFaceArchitecture(LightningModule):
                 self.parameters(),
                 lr=self.lr,
             )
+        t_max = self.period * self.trainer.num_training_batches
         scheduler = optim.lr_scheduler.CosineAnnealingLR(
             optimizer=optimizer,
-            T_max=self.t_max,
+            T_max=t_max,
             eta_min=self.eta_min,
         )
         return {

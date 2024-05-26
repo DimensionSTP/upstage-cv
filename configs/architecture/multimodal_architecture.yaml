@@ -38,6 +38,6 @@ multimodal_weight: ${multimodal_weight}
 modality_split_weight: ${modality_split_weight}
 dynamic_loss_weight: ${dynamic_loss_weight}
 lr: ${lr}
-t_max: ${t_max}
+period: ${period}
 eta_min: ${eta_min}
 interval: step
