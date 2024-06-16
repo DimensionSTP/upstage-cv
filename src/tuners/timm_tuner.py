@@ -167,4 +167,4 @@ class TimmTuner:
             )
             raise e
 
-        return trainer.callback_metrics[self.monitor].item()
+        return trainer.callback_metrics[self.module_params.monitor].item()
