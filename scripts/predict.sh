@@ -21,7 +21,8 @@ do
         text_upload_user=$text_upload_user \
         text_model_type=$text_model_type \
         precision=$precision \
-        batch_size=$batch_size
+        batch_size=$batch_size \
+        epoch=$epoch
 done
 
 modality="text"
@@ -43,7 +44,8 @@ do
         upload_user=$upload_user \
         model_type=$model_type \
         precision=$precision \
-        batch_size=$batch_size
+        batch_size=$batch_size \
+        epoch=$epoch
 done
 
 modality="image"
@@ -65,7 +67,8 @@ do
         upload_user=$upload_user \
         model_type=$model_type \
         precision=$precision \
-        batch_size=$batch_size
+        batch_size=$batch_size \
+        epoch=$epoch
 done
 
 modality="multimodal"
@@ -87,7 +90,8 @@ do
         upload_user=$upload_user \
         model_type=$model_type \
         precision=$precision \
-        batch_size=$batch_size
+        batch_size=$batch_size \
+        epoch=$epoch
 done
 
 is_tuned="untuned"
@@ -107,5 +111,6 @@ do
         model_type=$model_type \
         pretrained=$pretrained \
         precision=$precision \
-        batch_size=$batch_size
+        batch_size=$batch_size \
+        epoch=$epoch
 done
