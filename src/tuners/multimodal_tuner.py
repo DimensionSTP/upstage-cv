@@ -26,7 +26,6 @@ class MultiModalTuner:
         seed: int,
         num_trials: int,
         hparams_save_path: str,
-        monitor: str,
         train_loader: DataLoader,
         val_loader: DataLoader,
         logger: WandbLogger,
@@ -37,7 +36,6 @@ class MultiModalTuner:
         self.seed = seed
         self.num_trials = num_trials
         self.hparams_save_path = hparams_save_path
-        self.monitor = monitor
         self.train_loader = train_loader
         self.val_loader = val_loader
         self.logger = logger
