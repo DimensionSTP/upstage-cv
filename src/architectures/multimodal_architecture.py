@@ -23,6 +23,7 @@ class MultiModalArchitecture(LightningModule):
         modality_split_weight: float,
         dynamic_loss_weight: float,
         lr: float,
+        weight_decay: float,
         period: int,
         eta_min: float,
         interval: str,
@@ -37,6 +38,7 @@ class MultiModalArchitecture(LightningModule):
         self.dynamic_loss_weight = dynamic_loss_weight
         self.strategy = strategy
         self.lr = lr
+        self.weight_decay = weight_decay
         self.period = period
         self.eta_min = eta_min
         self.interval = interval
@@ -151,6 +153,7 @@ class MultiModalArchitecture(LightningModule):
             optimizer = FusedAdam(
                 self.parameters(),
                 lr=self.lr,
+                weight_decay=self.weight_decay,
             )
         elif (
             self.strategy == "deepspeed_stage_2_offload"
@@ -159,11 +162,13 @@ class MultiModalArchitecture(LightningModule):
             optimizer = DeepSpeedCPUAdam(
                 self.parameters(),
                 lr=self.lr,
+                weight_decay=self.weight_decay,
             )
         else:
             optimizer = optim.AdamW(
                 self.parameters(),
                 lr=self.lr,
+                weight_decay=self.weight_decay,
             )
         t_max = self.period * self.trainer.num_training_batches
         scheduler = optim.lr_scheduler.CosineAnnealingLR(
