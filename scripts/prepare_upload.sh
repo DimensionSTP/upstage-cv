@@ -11,7 +11,7 @@ precision=32
 batch_size=16
 epoch=10
 
-python $path/prepare_upload.py --config-name=multimodal.yaml \
+python $path/prepare_upload.py --config-name=huggingface.yaml \
     is_tuned=$is_tuned \
     strategy=$strategy \
     image_upload_user=$image_upload_user \
