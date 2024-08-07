@@ -10,6 +10,7 @@ text_model_type="roberta-large"
 precision=32
 batch_size=16
 epoch=10
+model_detail="roberta-large"
 
 python $path/upload_to_hf_hub.py --config-name=huggingface.yaml \
     is_tuned=$is_tuned \
@@ -20,4 +21,5 @@ python $path/upload_to_hf_hub.py --config-name=huggingface.yaml \
     text_model_type=$text_model_type \
     precision=$precision \
     batch_size=$batch_size \
-    epoch=$epoch
+    epoch=$epoch \
+    model_detail=$model_detail
