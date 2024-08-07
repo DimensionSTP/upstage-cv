@@ -71,7 +71,7 @@ gradient_clip_algorithm: norm
 epoch: 20
 
 model_name: MultiModalTransformer
-dataset_name: UpStageDocs
+dataset_name: UpStageDocImages
 mode: train
 
 is_tuned: tuned
@@ -90,6 +90,7 @@ logit_name: ${save_detail}-epoch=${epoch}
 submission_name: ${save_detail}-epoch=${epoch}
 
 user_name: ${oc.env:USER_NAME}
+model_detail: multimodal-transformer
 upload_tag: document-images
 num_safetensors: 2
 

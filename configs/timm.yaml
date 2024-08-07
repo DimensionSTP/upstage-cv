@@ -52,7 +52,7 @@ gradient_clip_algorithm: norm
 epoch: 100
 
 model_name: Timm
-dataset_name: UpStageDocs
+dataset_name: UpStageDocImages
 mode: train
 
 is_tuned: tuned
@@ -71,6 +71,7 @@ logit_name: ${save_detail}-epoch=${epoch}
 submission_name: ${save_detail}-epoch=${epoch}
 
 user_name: ${oc.env:USER_NAME}
+model_detail: resnet50
 upload_tag: document-images
 num_safetensors: 2
 
