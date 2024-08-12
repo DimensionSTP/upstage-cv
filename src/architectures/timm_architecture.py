@@ -104,7 +104,7 @@ class TimmArchitecture(LightningModule):
                 lr=self.lr,
                 weight_decay=self.weight_decay,
             )
-        t_max = self.half_period * self.trainer.num_training_batches
+        t_max = self.half_period * self.trainer.estimated_stepping_batches
         eta_min = self.lr * self.eta_min_rate
         scheduler = optim.lr_scheduler.CosineAnnealingLR(
             optimizer=optimizer,
