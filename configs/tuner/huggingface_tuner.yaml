@@ -13,8 +13,8 @@ hparams:
     - nielsr/layoutlmv3-finetuned-funsd
     - felixtran/layoutlmv3-rvl-cdip-small 
   lr:
-    low: 0.000005
-    high: 0.00005
+    low: 0.00005
+    high: 0.0005
     log: False
   weight_decay:
     low: 0.001
@@ -25,8 +25,8 @@ hparams:
     high: 10
     log: False
   eta_min_rate:
-    low: 0.05
-    high: 0.5
+    low: 0.005
+    high: 0.05
     log: False
 
 module_params:
