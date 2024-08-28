@@ -126,12 +126,12 @@ class HuggingFaceTuner:
                 high=self.hparams.half_period.high,
                 log=self.hparams.half_period.log,
             )
-        if self.hparams.eta_min_rate:
-            params["eta_min_rate"] = trial.suggest_float(
-                name="eta_min_rate",
-                low=self.hparams.eta_min_rate.low,
-                high=self.hparams.eta_min_rate.high,
-                log=self.hparams.eta_min_rate.log,
+        if self.hparams.eta_min_ratio:
+            params["eta_min_ratio"] = trial.suggest_float(
+                name="eta_min_ratio",
+                low=self.hparams.eta_min_ratio.low,
+                high=self.hparams.eta_min_ratio.high,
+                log=self.hparams.eta_min_ratio.log,
             )
 
         model = HuggingFaceModel(
@@ -148,7 +148,7 @@ class HuggingFaceTuner:
             lr=params["lr"],
             weight_decay=params["weight_decay"],
             half_period=params["half_period"],
-            eta_min_rate=params["eta_min_rate"],
+            eta_min_ratio=params["eta_min_ratio"],
             interval=self.module_params.interval,
         )
 

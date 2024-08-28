@@ -19,7 +19,7 @@ class HuggingFaceArchitecture(LightningModule):
         lr: float,
         weight_decay: float,
         half_period: int,
-        eta_min_rate: float,
+        eta_min_ratio: float,
         interval: str,
     ) -> None:
         super().__init__()
@@ -28,7 +28,7 @@ class HuggingFaceArchitecture(LightningModule):
         self.lr = lr
         self.weight_decay = weight_decay
         self.half_period = half_period
-        self.eta_min_rate = eta_min_rate
+        self.eta_min_ratio = eta_min_ratio
         self.interval = interval
 
         metrics = MetricCollection(
@@ -111,8 +111,12 @@ class HuggingFaceArchitecture(LightningModule):
                 lr=self.lr,
                 weight_decay=self.weight_decay,
             )
-        t_max = self.half_period * self.trainer.estimated_stepping_batches
-        eta_min = self.lr * self.eta_min_rate
+        t_max = (
+            self.half_period
+            * self.trainer.estimated_stepping_batches
+            // self.trainer.max_epochs
+        )
+        eta_min = self.lr * self.eta_min_ratio
         scheduler = optim.lr_scheduler.CosineAnnealingLR(
             optimizer=optimizer,
             T_max=t_max,
