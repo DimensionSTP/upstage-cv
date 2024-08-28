@@ -12,20 +12,20 @@ hparams:
     - pretrained
     - raw
   lr:
-    low: 0.00005
-    high: 0.0005
+    low: 5e-5
+    high: 5e-4
     log: False
   weight_decay:
-    low: 0.001
-    high: 0.01
+    low: 1e-2
+    high: 1e-1
     log: False
   half_period:
     low: 1
     high: 10
     log: False
-  eta_min_rate:
-    low: 0.005
-    high: 0.05
+  eta_min_ratio:
+    low: 5e-3
+    high: 5e-2
     log: False
 
 module_params:

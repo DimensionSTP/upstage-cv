@@ -39,6 +39,6 @@ modality_split_weight: ${modality_split_weight}
 dynamic_loss_weight: ${dynamic_loss_weight}
 lr: ${lr}
 weight_decay: ${weight_decay}
-warmup_rate: ${warmup_rate}
-eta_min_rate: ${eta_min_rate}
+warmup_ratio: ${warmup_ratio}
+eta_min_ratio: ${eta_min_ratio}
 interval: step
