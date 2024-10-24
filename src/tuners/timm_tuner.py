@@ -100,7 +100,7 @@ class TimmTuner:
                 log=self.hparams.weight_decay.log,
             )
         if self.hparams.half_period:
-            params["half_period"] = trial.suggest_int(
+            params["half_period"] = trial.suggest_float(
                 name="half_period",
                 low=self.hparams.half_period.low,
                 high=self.hparams.half_period.high,
