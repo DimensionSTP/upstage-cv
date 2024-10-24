@@ -61,7 +61,7 @@ class UpStageDocsDataset(Dataset):
         self,
         idx: int,
     ) -> Dict[str, Any]:
-        image = np.array(Image.open(self.image_paths[idx]).convert("RGB"))
+        image = np.array(Image.open(self.image_paths[idx]).convert("RGB")) / 255.0
         image = self.transform(image=image)["image"]
         encoded_image = self.encode_image(image)
         encoded_image["labels"] = torch.tensor(

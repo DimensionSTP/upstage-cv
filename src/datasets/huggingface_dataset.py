@@ -72,7 +72,7 @@ class UpStageDocsDataset(Dataset):
         idx: int,
     ) -> Dict[str, Any]:
         if self.modality in ["image", "multi-modality"]:
-            data = np.array(Image.open(self.datas[idx]).convert("RGB"))
+            data = np.array(Image.open(self.datas[idx]).convert("RGB")) / 255.0
             data = self.transform(image=data)["image"]
             if self.modality == "image":
                 encoded = self.encode_image(data)
