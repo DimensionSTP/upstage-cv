@@ -48,7 +48,7 @@ class UpStageDocsDataset(Dataset):
         idx: int,
     ) -> Dict[str, Any]:
         image_path = self.image_paths[idx]
-        image = np.array(Image.open(image_path).convert("RGB")) / 255.0
+        image = np.array(Image.open(image_path).convert("RGB"))
         image = self.transform(image=image)["image"]
         label = self.labels[idx]
         return {
